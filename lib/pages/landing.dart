@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia/pages/new_trivia.dart';
 import 'package:trivia/pages/settings.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -25,15 +26,15 @@ class _LandingPageState extends State<LandingPage> {
               SizedBox(height: constraints.maxHeight * 0.1,),
               Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: TextButton(onPressed: () => { _launchNew()}, child: const Text('New Trivia')),
+                child: TextButton(onPressed: () => { _launch(const NewTriviaPage())}, child: const Text('New Trivia')),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: TextButton(onPressed: () => { _launchLoad()}, child: const Text('Load Trivia')),
+                child: TextButton(onPressed: () => { _launch(const Placeholder())}, child: const Text('Load Trivia')),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: TextButton(onPressed: () => { _launchSettings()}, child: const Text('Settings')),
+                child: TextButton(onPressed: () => { _launch(const SettingsPage())}, child: const Text('Settings')),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
@@ -46,18 +47,10 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
   
-  void _launchNew() {
-
-  }
-
-  void _launchLoad() {
-
-  }
-
-  void _launchSettings() {
+  void _launch(Widget widget) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const SettingsPage(),
+        builder: (context) => widget,
       ),
     );
   }
