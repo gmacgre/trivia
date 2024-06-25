@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       style: Theme.of(context).textTheme.displaySmall,
                     ),
                     TextButton(
-                      onPressed: () => { Navigator.of(context).pop()},
+                      onPressed: () => { Navigator.of(context).popUntil(ModalRoute.withName('/'))},
                       child: const Text('Return to Home')
                     ),
                   ],

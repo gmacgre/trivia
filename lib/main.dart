@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/pages/landing.dart';
+import 'package:trivia/pages/new_trivia.dart';
+import 'package:trivia/pages/settings.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -36,7 +38,11 @@ class MainApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lime),
       ),
-      home: const LandingPage(),
+      routes: {
+        '/': (context) => const LandingPage(),
+        '/new': (context) => const NewTriviaPage(), 
+        '/settings': (context) => const SettingsPage()
+      },
     );
   }
 }
