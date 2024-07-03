@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:trivia/pages/landing.dart';
-import 'package:trivia/pages/new_trivia.dart';
-import 'package:trivia/pages/settings.dart';
+import 'package:trivia/pages/menu/landing.dart';
+import 'package:trivia/pages/menu/new.dart';
+import 'package:trivia/pages/menu/settings.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {

@@ -1,6 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/pages/editor.dart';
 
 class NewTriviaPage extends StatefulWidget {
@@ -12,7 +11,7 @@ class NewTriviaPage extends StatefulWidget {
 
 class _NewTriviaPageState extends State<NewTriviaPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  late final Directory dir;
+  late final String _dir;
   String saveLocation = '';
   String newTitle = '';
 
@@ -23,19 +22,18 @@ class _NewTriviaPageState extends State<NewTriviaPage> {
   }
 
   void _getdir() async {
-    Directory newDir = await getApplicationDocumentsDirectory();
-    newDir = Directory.fromUri(Uri.directory('${newDir.path}\\triviaApp', windows: true));
-    if(!newDir.existsSync()) {
-      newDir.create(recursive: true);
-    }
+    String newDir = await FileManager.getPath();
     setState(() {
-      dir = newDir;
+      _dir = newDir;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('New Trivia'),
+      ),
       body: Form(
         key: _formKey,
         child: Center(
@@ -55,14 +53,15 @@ class _NewTriviaPageState extends State<NewTriviaPage> {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a title.';
                       }
-                      // TODO: Ensure valid file saving
                       String tocheck = _convertTitletoSaveId(value);
-                      File f = File('${dir.path}$tocheck.json');
-                      if(f.existsSync()) {
-                        debugPrint('File Exists!!');
+                      String location = '$_dir$tocheck.json';
+                      if(!FileManager.validSave(location)) {
+                        return 'Illegal Characters Used';
+                      }
+                      if(FileManager.saveExists(location)) {
                         return 'File Already Exists.';
                       }
-                      saveLocation = f.path;
+                      saveLocation = location;
                       newTitle = value;
                       return null;
                     },
@@ -78,8 +77,10 @@ class _NewTriviaPageState extends State<NewTriviaPage> {
                     }
                     // Make a new Object to Write and Save
                     // Launch a new TriviaEditPage Object with the basic parameters
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => TriviaEditorPage(location: saveLocation, title: newTitle)),
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => TriviaEditorPage(location: saveLocation, title: newTitle)
+                      ),
                     );
                   },
                   child: const Text('Save'),

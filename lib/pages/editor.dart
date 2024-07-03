@@ -27,16 +27,23 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
   }
 
   void _readLocation() {
-    if(widget.title != '') {
-      trivia = Trivia(title: widget.title);
+    trivia = Trivia(title: widget.title);
+    if(FileManager.saveExists(widget.location)) {
+      trivia = FileManager.readFile(widget.location);
     }
     else {
-      trivia = FileManager.readFile(widget.location);
+      FileManager.writeFile(trivia, widget.location);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(trivia.title),
+        centerTitle: true,
+      ),
+      body: const Placeholder(),
+    );
   }
 }
