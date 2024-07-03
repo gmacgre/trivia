@@ -13,9 +13,6 @@ class FileManager {
     return newDir.path;
   }
 
-  
-
-
   static bool saveExists(String location) {
     File file = File(location);
     return file.existsSync();
@@ -37,6 +34,15 @@ class FileManager {
   static bool validSave(String location) {
     // TODO: Ensure valid file saving
     return true;
+  }
+
+  static Future<List<String>> readDir(String location) async {
+    Directory dir = Directory(location);
+    return await dir.list()
+      .where((event) => event.path.endsWith('.json'))
+      .map((event) => event.path)
+      .toList();
+    
   }
   
 }

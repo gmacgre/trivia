@@ -11,17 +11,28 @@ class LoadTriviaPage extends StatefulWidget {
 class _LoadTriviaPageState extends State<LoadTriviaPage> {
 
   late final String _path;
+  late final List<String> _titles;
 
   @override
   void initState() {
     super.initState();
-    _getDir();
+    _getPath();
   }
 
-  void _getDir() async {
-    String dir = await FileManager.getPath();
+  void _getPath() async {
+    String path = await FileManager.getPath();
     setState(() {
-      _path = dir;
+      _path = path;
+    });
+
+    _loadFiles();
+  }
+
+  void _loadFiles() async {
+    List<String> titles = await FileManager.readDir(_path);
+    debugPrint(titles.toString());
+    setState(() {
+      _titles = titles;
     });
   }
 

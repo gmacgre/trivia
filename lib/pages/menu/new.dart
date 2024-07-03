@@ -95,7 +95,7 @@ class _NewTriviaPageState extends State<NewTriviaPage> {
 
   String _convertTitletoSaveId(String input) {
     input = input.toLowerCase();
-    input.replaceAll(RegExp(' +'), '_');
+    input = input.replaceAll(RegExp(r' +'), '_');
     return input;
   }
 }

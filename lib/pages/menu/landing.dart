@@ -28,7 +28,7 @@ class _LandingPageState extends State<LandingPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: TextButton(onPressed: () => { _launch('/settings')}, child: const Text('Load Trivia')),
+                child: TextButton(onPressed: () => { _launch('/load')}, child: const Text('Load Trivia')),
               ),
               Padding(
                 padding: const EdgeInsets.all(4.0),
