@@ -20,7 +20,7 @@ class Trivia {
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'categories': categories
+      'categories': categories.map((e) => e.toJson()).toList()
     };
   }
 }

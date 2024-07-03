@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
-import 'package:trivia/pages/editor.dart';
+import 'package:trivia/pages/editor/editor.dart';
 
 class NewTriviaPage extends StatefulWidget {
   const NewTriviaPage({super.key});

@@ -1,16 +1,24 @@
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:trivia/model/trivia.dart';
 
 class FileManager {
+  static const JsonEncoder _encoder = JsonEncoder.withIndent('    ');
+  static Directory? _directory;
+
   static Future<String> getPath() async {
-    Directory newDir = await getApplicationDocumentsDirectory();
-    newDir = Directory.fromUri(Uri.directory('${newDir.path}\\triviaApp', windows: true));
-    if(!newDir.existsSync()) {
-      newDir.create(recursive: true);
+    if(_directory == null) {
+      Directory newDir = await getApplicationDocumentsDirectory();
+      newDir = Directory.fromUri(Uri.directory('${newDir.path}\\triviaApp', windows: true));
+      if(!newDir.existsSync()) {
+        newDir.create(recursive: true);
+      }
+      _directory = newDir;
     }
-    return newDir.path;
+    
+    return _directory!.path;
   }
 
   static bool saveExists(String location) {
@@ -26,7 +34,7 @@ class FileManager {
   }
 
   static void writeFile(Trivia t, String location) async {
-    String toWrite = jsonEncode(t);
+    String toWrite = _encoder.convert(t);
     File file = File(location);
     file.writeAsStringSync(toWrite);
   }
@@ -59,6 +67,7 @@ class FileManager {
         trivia = Trivia.fromJson(jsonDecode(json) as Map<String, dynamic>);
       } 
       catch (e) {
+        debugPrint(e.toString());
         // Just ignore and move on
         continue;
       }
