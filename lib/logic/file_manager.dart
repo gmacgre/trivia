@@ -25,7 +25,7 @@ class FileManager {
     return Trivia.fromJson(map);
   }
 
-  static void writeFile(Trivia t, String location) {
+  static void writeFile(Trivia t, String location) async {
     String toWrite = jsonEncode(t);
     File file = File(location);
     file.writeAsStringSync(toWrite);

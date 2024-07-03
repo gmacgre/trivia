@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/model/trivia.dart';
+import 'package:trivia/pages/presenter.dart';
 
 class TriviaEditorPage extends StatefulWidget {
   const TriviaEditorPage({
@@ -43,7 +44,43 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
         title: Text(trivia.title),
         centerTitle: true,
       ),
-      body: const Placeholder(),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // TODO: remove this later
+            SizedBox(width: MediaQuery.of(context).size.width),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.05,
+              width: MediaQuery.of(context).size.width * 0.5,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      FileManager.writeFile(trivia, widget.location);
+                    }, 
+                    child: const Text('Save')
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PresenterPage(trivia: trivia)
+                        )
+                      );
+
+                    }, 
+                    child: const Text('Present')
+                  ),
+                ],
+              )
+            )
+          ],
+        )
+      )
     );
   }
 }
