@@ -18,9 +18,12 @@ class _PresenterPageState extends State<PresenterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('asdfasdf'),
+        title: Text(widget.trivia.title),
+        centerTitle: true,
       ),
-      body: const Placeholder(),
+      body: Wrap(
+        children: widget.trivia.categories.map((e) => const Placeholder()).toList(),
+      ),
     );
   }
 }

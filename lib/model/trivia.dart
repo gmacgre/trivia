@@ -12,6 +12,7 @@ class Trivia {
   factory Trivia.fromJson(Map<String, dynamic> json) {
     return Trivia(
       title: json['title'],
+      categories: List<Category>.from((json['categories'] as List<dynamic>).map((e) => Category.fromJson(e)))
       // Initialize other fields as needed.
     );
   }
