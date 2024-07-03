@@ -42,7 +42,29 @@ class FileManager {
       .where((event) => event.path.endsWith('.json'))
       .map((event) => event.path)
       .toList();
-    
+  }
+
+  static Future<List<String>> getTitles(List<String> files) async {
+    List<String> toReturn = [];
+    File file;
+    Trivia trivia;
+    for(String loc in files) {
+      file = File(loc);
+      if(!await file.exists()) {
+        continue;
+      }
+      String json = await file.readAsString();
+      // deserialize the file to just get the title
+      try {
+        trivia = Trivia.fromJson(jsonDecode(json) as Map<String, dynamic>);
+      } 
+      catch (e) {
+        // Just ignore and move on
+        continue;
+      }
+      toReturn.add(trivia.title);
+    }
+    return toReturn;
   }
   
 }

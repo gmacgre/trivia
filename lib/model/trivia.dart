@@ -18,7 +18,8 @@ class Trivia {
 
   Map<String, dynamic> toJson() {
     return {
-      'title': title
+      'title': title,
+      'categories': categories
     };
   }
 }
