@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:trivia/model/trivia.dart';
 
@@ -67,13 +66,20 @@ class FileManager {
         trivia = Trivia.fromJson(jsonDecode(json) as Map<String, dynamic>);
       } 
       catch (e) {
-        debugPrint(e.toString());
         // Just ignore and move on
         continue;
       }
       toReturn.add(trivia.title);
     }
     return toReturn;
+  }
+
+  static String encode(Trivia t) {
+    return jsonEncode(t);
+  }
+
+  static Trivia decode(String trivia) {
+    return Trivia.fromJson(jsonDecode(trivia) as Map<String, dynamic>);
   }
   
 }

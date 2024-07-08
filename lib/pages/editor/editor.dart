@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/trivia.dart';
+import 'package:trivia/pages/editor/category_editor.dart';
 import 'package:trivia/pages/presenter.dart';
 
 class TriviaEditorPage extends StatefulWidget {
@@ -104,9 +105,15 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                       child: const Text('Add New Category')
                     ),
                     ElevatedButton(
-                      onPressed: (selected == -1) ? null : () {
+                      onPressed: (selected == -1) ? null : () async {
+                        Category? newData = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => CategoryEditor(category: trivia.categories[selected]),
+                          )
+                        );
                         setState(() {
-                          // TODO: Launch a category editor from here
+                          trivia.categories[selected] = (newData != null) ? newData : trivia.categories[selected];
+                          selected = -1;
                         });
                       }, 
                       child: const Text('Edit')
