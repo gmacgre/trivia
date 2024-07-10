@@ -122,6 +122,21 @@ class _CategoryEditorState extends State<CategoryEditor> {
                         ),
                       ),
                     ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Image Link'
+                          ),
+                          controller: TextEditingController(text: _questions[e.key].imageLink),
+                          onChanged: (value) {
+                              _questions[e.key].imageLink = value;
+                          },
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
