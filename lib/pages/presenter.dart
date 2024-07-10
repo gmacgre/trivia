@@ -2,6 +2,7 @@ import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/model/category.dart';
+import 'package:trivia/model/player.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/widgets/board.dart';
 
@@ -22,6 +23,7 @@ class _PresenterPageState extends State<PresenterPage> {
   int _selectedCategory = -1;
   int _selectedQuestion = -1;
   final List<List<bool>> _previouslySelected = [];
+  final List<Player> _players = [];
 
   @override
   void initState() {
@@ -29,7 +31,7 @@ class _PresenterPageState extends State<PresenterPage> {
     DesktopMultiWindow.createWindow(FileManager.encode(widget.trivia)).then((value) => setState((){
       window = value;
       window 
-      ..setFrame(const Offset(0, 0) & const Size(1280, 720))
+      ..setFrame(const Offset(0, 0) & const Size(1200, 850))
       ..center()
       ..setTitle('Controller Window')
       ..show();
@@ -63,14 +65,42 @@ class _PresenterPageState extends State<PresenterPage> {
       body: Center(
         child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: QuestionBoard(
-                  selected: _previouslySelected,
-                  trivia: widget.trivia,
+            Column(
+              children: [
+                Expanded(
+                  flex: 6,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: QuestionBoard(
+                        selected: _previouslySelected,
+                        trivia: widget.trivia,
+                      )
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: _players.map((e) => Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          e.name,
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        Text(
+                          '${e.score}',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        )
+                      ],
+                    )).toList(),
+                  ),
                 )
-              ),
+              ],
             ),
             Positioned.fill(
               child: Align(
@@ -128,6 +158,26 @@ class _PresenterPageState extends State<PresenterPage> {
         setState(() {
           _selectedCategory = arguments['category'];
           _selectedQuestion = arguments['question'];
+        });
+      }
+      case 'newPlayer': {
+        setState(() {
+          _players.add(
+            Player(
+              score: arguments['score'],
+              name: arguments['name']
+            )
+          );
+        });
+      }
+      case 'setName': {
+        setState(() {
+          _players[arguments['index']].name = arguments['name'];
+        });
+      }
+      case 'setScore': {
+        setState(() {
+          _players[arguments['index']].score = arguments['score'];
         });
       }
     }
