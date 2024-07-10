@@ -99,7 +99,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          trivia.categories.add(Category(title: 'New Category'));
+                          trivia.categories.add(Category(title: 'New Category', questions: []));
                         });
                       }, 
                       child: const Text('Add New Category')

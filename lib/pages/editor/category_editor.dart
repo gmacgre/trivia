@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:trivia/logic/base_encoder.dart';
 import 'package:trivia/model/category.dart';
+import 'package:trivia/model/question.dart';
 
 class CategoryEditor extends StatefulWidget {
   final Category category;
@@ -16,11 +18,13 @@ class CategoryEditor extends StatefulWidget {
 class _CategoryEditorState extends State<CategoryEditor> {
   CategoryType _type = CategoryType.rapid;
   final TextEditingController _controller = TextEditingController();
+  List<Question> _questions = const [];
   @override
   void initState() {
     super.initState();
     _type = widget.category.type;
     _controller.text = widget.category.title;
+    _questions = widget.category.questions;
   }
 
   @override
@@ -32,6 +36,8 @@ class _CategoryEditorState extends State<CategoryEditor> {
       ),
       body: Column(
         children: [
+
+          // Title Editing
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -54,6 +60,8 @@ class _CategoryEditorState extends State<CategoryEditor> {
               ],
             ),
           ),
+
+          // Category Type Selection
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -86,6 +94,68 @@ class _CategoryEditorState extends State<CategoryEditor> {
               ],
             ),
           ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: _questions.asMap().entries.map((e) => Row(
+                  children: [
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: TextEditingController(text: _questions[e.key].question),
+                          onChanged: (value) {
+                            _questions[e.key].question = value;
+                          },
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: TextEditingController(text: BaseEncoder.decode(_questions[e.key].answer)),
+                          onChanged: (value) {
+                              _questions[e.key].answer = BaseEncoder.encode(value);
+                          },
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _questions.removeAt(e.key);
+                          setState(() {
+                            _questions = _questions;
+                          });
+                        }, 
+                        child: const Text('Delete')
+                      ),
+                    )
+                  ],
+                )).toList(),
+              ),
+            )
+          ),
+
+          // Add Question Button
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FilledButton(
+              onPressed: (){
+                String newAnswer = BaseEncoder.encode('New Answer');
+                _questions.add(Question(question: 'New Question', answer: newAnswer, imageLink: ''));
+                setState(() {
+                  _questions = _questions;
+                });
+              },
+              child: const Text('Add Question')
+            ),
+          ),
+
+          // Save and Return
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: FilledButton(

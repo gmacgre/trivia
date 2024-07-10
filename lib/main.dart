@@ -39,7 +39,7 @@ class MainWindow extends StatelessWidget {
     return MaterialApp(
       title: 'TriviaApp',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lime),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       routes: {
         '/': (context) => const LandingPage(),
@@ -66,7 +66,7 @@ class AnswersWindow extends StatelessWidget {
     return MaterialApp(
       title: 'Answers',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lime),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
       home: AnswersPage(trivia: trivia),
 
