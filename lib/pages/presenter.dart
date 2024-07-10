@@ -113,26 +113,36 @@ class _PresenterPageState extends State<PresenterPage> {
                       width: (showQuestion) ?  7.0 : 0.0
                     )
                   ),
-                  duration: const Duration(milliseconds: 500),
+                  duration: (showQuestion) ? const Duration(milliseconds: 500) : const Duration(milliseconds: 0),
                   width: (showQuestion) ? MediaQuery.of(context).size.width : 0.0,
                   height: (showQuestion) ? MediaQuery.of(context).size.height : 0.0,
                   child: Center(
                     child: LayoutBuilder(
-                      builder: (context, constraints) => SizedBox(
-                        width: constraints.maxWidth * 0.6,
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 500),
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: (showQuestion) ? 40.0 : 0.0
+                      builder: (context, constraints) {
+
+                        // Image Question
+                        if(showQuestion &&
+                           widget.trivia.categories[_selectedCategory].questions[_selectedQuestion].imageLink != '') {
+                          return Image.network(widget.trivia.categories[_selectedCategory].questions[_selectedQuestion].imageLink);
+                        }
+
+                        // Default Question, Just Show Question Text
+                        return SizedBox(
+                          width: constraints.maxWidth * 0.6,
+                          child: AnimatedDefaultTextStyle(
+                            duration: (showQuestion) ? const Duration(milliseconds: 500) : const Duration(milliseconds: 0),
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: (showQuestion) ? 40.0 : 0.0
+                            ),
+                            child: Text(
+                              (showQuestion) ? 
+                                widget.trivia.categories[_selectedCategory].questions[_selectedQuestion].question : '',
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          child: Text(
-                            (showQuestion) ? 
-                              widget.trivia.categories[_selectedCategory].questions[_selectedQuestion].question : '',
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
+                        );
+                      }
                     ),
                   ),
                 ),
