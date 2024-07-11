@@ -34,7 +34,7 @@ class QuestionBoard extends StatelessWidget {
           child: Center(
             child: Text(
               category.title,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: (listener == null)? 25 : 13),
               textAlign: TextAlign.center,
             ),
           ),
@@ -48,7 +48,7 @@ class QuestionBoard extends StatelessWidget {
           } : null,
           child: Ink(
             decoration: questionDecoration,
-            child: Center(child: (!selected[index][e.key]) ? Text('${e.key}') : null),
+            child: Center(child: (!selected[index][e.key]) ? Text('${((e.key + 1) * 100)}', style: Theme.of(context).textTheme.headlineLarge,) : null),
           ),
         )
       ).toList());

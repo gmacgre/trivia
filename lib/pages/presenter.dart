@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
@@ -20,6 +21,7 @@ class PresenterPage extends StatefulWidget {
 
 class _PresenterPageState extends State<PresenterPage> {
   late final WindowController window;
+  late AudioPlayer _audio = AudioPlayer();
   int _selectedCategory = -1;
   int _selectedQuestion = -1;
   final List<List<bool>> _previouslySelected = [];
@@ -28,6 +30,17 @@ class _PresenterPageState extends State<PresenterPage> {
   @override
   void initState() {
     super.initState();
+    // Create the audio player.
+    _audio = AudioPlayer();
+
+    // Set the release mode to keep the source after playback has completed.
+    _audio.setReleaseMode(ReleaseMode.stop);
+
+    // Start the player as soon as the app is displayed.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _audio.setSource(AssetSource('times-up.mp3'));
+    });
+
     DesktopMultiWindow.createWindow(FileManager.encode(widget.trivia)).then((value) => setState((){
       window = value;
       window 
@@ -51,6 +64,7 @@ class _PresenterPageState extends State<PresenterPage> {
   @override
   void dispose() {
     window.close();
+    _audio.dispose();
     super.dispose();
   }
 
@@ -90,11 +104,11 @@ class _PresenterPageState extends State<PresenterPage> {
                       children: [
                         Text(
                           e.name,
-                          style: Theme.of(context).textTheme.labelLarge,
+                          style: Theme.of(context).textTheme.displaySmall,
                         ),
                         Text(
                           '${e.score}',
-                          style: Theme.of(context).textTheme.labelLarge,
+                          style: Theme.of(context).textTheme.displaySmall,
                         )
                       ],
                     )).toList(),
@@ -189,6 +203,9 @@ class _PresenterPageState extends State<PresenterPage> {
         setState(() {
           _players[arguments['index']].score = arguments['score'];
         });
+      }
+      case 'buzz': {
+        _audio.resume();
       }
     }
   }

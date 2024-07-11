@@ -121,10 +121,7 @@ class _AnswersPageState extends State<AnswersPage> {
                     setState(() {
                       _players[e.key].score = int.parse(scoreController.text);
                     });
-                    DesktopMultiWindow.invokeMethod(0, 'setScore', {
-                      'score': int.parse(scoreController.text),
-                      'index': e.key
-                    });
+                    _updateScore(e.key, int.parse(scoreController.text));
                   },
                   style: buttonStyle,
                   child: const Icon(Icons.check)
@@ -194,22 +191,44 @@ class _AnswersPageState extends State<AnswersPage> {
           children: [
             Text(
               question.question,
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             Text(
               BaseEncoder.decode(question.answer),
               style: Theme.of(context).textTheme.titleLarge,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: _players.asMap().entries.map((e) => Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      _players[e.key].score += (_selectedQuestion + 1) * 100;
+                      _updateScore(e.key, _players[e.key].score);
+                      _returnToBoard();
+                    },
+                    child: Text('${e.value.name} Correct')
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _players[e.key].score -= (_selectedQuestion + 1) * 100;
+                      _updateScore(e.key, _players[e.key].score);
+                    },
+                    child: Text('${e.value.name} Incorrect')
+                  ),
+                ],
+              )).toList(),
+            ),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _previouslySelected[_selectedCategory][_selectedQuestion] = true;
-                  _selectedCategory = -1;
-                  _selectedQuestion = -1;
-                });
-                DesktopMultiWindow.invokeMethod(0, 'board');
+                DesktopMultiWindow.invokeMethod(0, 'buzz');
               },
+              child: const Text('Buzzer')
+            ),        
+            ElevatedButton(
+              onPressed: _returnToBoard,
               child: const Text('Return to Board')
             )
           ],
@@ -218,6 +237,21 @@ class _AnswersPageState extends State<AnswersPage> {
     );
   }
 
+  void _updateScore(int idx, int score) {
+    DesktopMultiWindow.invokeMethod(0, 'setScore', {
+      'score': score,
+      'index': idx
+    });
+  }
+
+  void _returnToBoard() {
+    setState(() {
+      _previouslySelected[_selectedCategory][_selectedQuestion] = true;
+      _selectedCategory = -1;
+      _selectedQuestion = -1;
+    });
+    DesktopMultiWindow.invokeMethod(0, 'board');
+  }
 
   void _setSelection(int category, int question) {
     setState(() {
