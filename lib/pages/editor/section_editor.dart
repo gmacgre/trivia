@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/pages/editor/jeopardy/jeopardy_section_editor.dart';
@@ -17,10 +18,12 @@ class SectionEditor extends StatefulWidget {
 
 class _SectionEditorState extends State<SectionEditor> {
 
+  final TextEditingController _controller = TextEditingController();
   late Section section;
   @override
   void initState() {
     section = widget.section;
+    _controller.text = section.title;
     super.initState();
   }
 
@@ -28,17 +31,56 @@ class _SectionEditorState extends State<SectionEditor> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Section Editor - ${widget.section.title}'),
+        title: Text(section.title),
       ),
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Section Title:',
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: TextField(
+                      controller: _controller,
+                      onChanged: (value) => {section.title = value},
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: MenuBar(
+                      children: [ 
+                        SubmenuButton(
+                          menuChildren: SectionType.values.map((e) => MenuItemButton(
+                            onPressed: () {
+                              if(e == section.type) return;
+                              _resetSection(e);
+                            },
+                            child: Text(e.name)
+                          )).toList(),
+                          child: Text(section.type.name),
+                        )
+                      ]
+                    ),
+                  )
+                ],
+              ),
+            ),
             Expanded(
               flex: 7,
-              child: switch (widget.section.type) {
+              child: switch (section.type) {
                 SectionType.jeopardy => JeopardySectionEditor(
-                  section: widget.section as JeopardySection,
-                  updater: _updateSection
+                  section: section as JeopardySection,
                 ),
                 SectionType.bowl => const Placeholder()
               },
@@ -49,7 +91,7 @@ class _SectionEditorState extends State<SectionEditor> {
                 padding: const EdgeInsets.all(8.0),
                 child: FilledButton(
                   onPressed: (){
-                    Navigator.of(context).pop(widget.section);
+                    Navigator.of(context).pop(section);
                   },
                   child: const Text('Save and Return')
                 ),
@@ -60,10 +102,13 @@ class _SectionEditorState extends State<SectionEditor> {
       ),
     );
   }
-
-  _updateSection(Section newSection) {
+  
+  void _resetSection(SectionType e) {
     setState(() {
-      section = newSection;
+      section = switch(e) {
+        SectionType.jeopardy => JeopardySection(categories: [], title: section.title),
+        SectionType.bowl => BowlSection(title: section.title)
+      };
     });
   }
 }

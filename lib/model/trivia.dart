@@ -1,3 +1,4 @@
+import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 
@@ -16,6 +17,7 @@ class Trivia {
       sections: (json['sections'] as List).map(
         (e) => switch (e['type']) {
           "jeopardy" => JeopardySection.fromJson(e),
+          "bowl" => BowlSection.fromJson(e),
           _ => JeopardySection(categories: [], title: "Error: Bad Section Read")
         }
       ).toList(),

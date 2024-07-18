@@ -4,6 +4,7 @@ import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/pages/editor/section_editor.dart';
+import 'package:trivia/pages/editor/selector.dart';
 import 'package:trivia/pages/presenter/presenter.dart';
 
 class TriviaEditorPage extends StatefulWidget {
@@ -46,15 +47,6 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> sections = trivia.sections.asMap().entries.map((e) => ListTile(
-      title: Text(e.value.title),
-      selected: selected == e.key,
-      onTap: () {
-        setState(() {
-          selected = e.key;
-        });
-      },
-    )).toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(trivia.title),
@@ -79,13 +71,15 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
               flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(border: Border.all(color: Theme.of(context).disabledColor, width: 5.0)),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: ListView(
-                    children: sections,
-                  ),
-                ),
+                child: Selector(
+                  contents: trivia.sections.map((e) => e.title).toList(),
+                  onSelection: (newIndex) {
+                    setState(() {
+                      selected = newIndex;
+                    });
+                  },
+                  selected: selected
+                )
               )
             ),
             Padding(

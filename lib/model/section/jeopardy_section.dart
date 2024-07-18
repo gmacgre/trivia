@@ -3,7 +3,6 @@ import 'package:trivia/model/section/section.dart';
 
 final class JeopardySection implements Section {
   JeopardySection({
-    this.type = SectionType.jeopardy,
     required this.categories,
     required this.title,
   });
@@ -14,7 +13,7 @@ final class JeopardySection implements Section {
   String title;
   
   @override
-  SectionType type;
+  final SectionType type = SectionType.jeopardy;
   
   @override
   Map<String, dynamic> toJson() {

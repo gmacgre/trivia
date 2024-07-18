@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
-import 'package:trivia/model/section/section.dart';
-import 'package:trivia/pages/editor/category_editor.dart';
+import 'package:trivia/pages/editor/jeopardy/category_editor.dart';
 import 'package:trivia/pages/editor/selector.dart';
 
 class JeopardySectionEditor extends StatefulWidget {
   const JeopardySectionEditor({
     required this.section,
-    required this.updater,
     super.key
   });
 
   final JeopardySection section;
-  final Function(Section) updater;
 
   @override
   State<JeopardySectionEditor> createState() => _JeopardySectionEditorState();
@@ -35,7 +32,7 @@ class _JeopardySectionEditorState extends State<JeopardySectionEditor> {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             'Select a Category to Edit',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
         ),
         Expanded(

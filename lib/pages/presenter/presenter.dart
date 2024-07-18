@@ -25,17 +25,11 @@ class _PresenterPageState extends State<PresenterPage> {
   @override
   void initState() {
     super.initState();
-    // Create the audio player.
     _audio = AudioPlayer();
-
-    // Set the release mode to keep the source after playback has completed.
     _audio.setReleaseMode(ReleaseMode.stop);
-
-    // Start the player as soon as the app is displayed.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _audio.setSource(AssetSource('times-up.mp3'));
     });
-
     DesktopMultiWindow.createWindow(FileManager.encode(widget.trivia)).then((value) => setState((){
       window = value;
       window 
@@ -47,8 +41,6 @@ class _PresenterPageState extends State<PresenterPage> {
     DesktopMultiWindow.setMethodHandler((call, fromWindowId) async {
       _processMessage(call.method, call.arguments);
     });
-
-    
   }
 
   @override
@@ -59,16 +51,16 @@ class _PresenterPageState extends State<PresenterPage> {
   }
 
 
-  // This is just a basic cover that is the main listener for prompts from the anser board
-  // Just show a default logo for now on the front
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.trivia.title),
-        centerTitle: true,
-      ),
-      body: const Placeholder()
+      body: Center(
+        child: Icon(
+          Icons.lightbulb,
+          size: MediaQuery.of(context).size.height / 2,
+          color: Theme.of(context).primaryColor,
+        ),
+      )
     );
   }
 
@@ -98,8 +90,8 @@ class _PresenterPageState extends State<PresenterPage> {
       case 'buzz': {
         _audio.resume();
       }
-      case 'showBoard': {
-        _audio.resume();
+      case 'pop': {
+        Navigator.of(context).pop();
       }
     }
   }

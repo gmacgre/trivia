@@ -4,7 +4,7 @@ abstract class Section {
     required this.type
   });
 
-  SectionType type;
+  final SectionType type;
   String title;
 
   Map<String, dynamic> toJson();

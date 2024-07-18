@@ -40,9 +40,6 @@ class _AnswersPageState extends State<AnswersPage> {
   @override
   Widget build(BuildContext context) {
 
-
-
-
     // Player Adder
     List<Widget> base = [];
     base.addAll(_players.asMap().entries.map((e) {
@@ -122,9 +119,18 @@ class _AnswersPageState extends State<AnswersPage> {
     );
 
     
-    return const Scaffold(
-      body: Column(
-
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            IconButton(
+              onPressed: () {
+                DesktopMultiWindow.invokeMethod(0, 'pop');
+              },
+              icon: const Icon(Icons.flag)
+            )
+          ],
+        ),
       )
     );
   }
