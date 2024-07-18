@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
-import 'package:trivia/model/category.dart';
+import 'package:trivia/model/section/jeopardy_section.dart';
+import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
-import 'package:trivia/pages/editor/category_editor.dart';
-import 'package:trivia/pages/presenter.dart';
+import 'package:trivia/pages/editor/section_editor.dart';
+import 'package:trivia/pages/presenter/presenter.dart';
 
 class TriviaEditorPage extends StatefulWidget {
   const TriviaEditorPage({
@@ -31,7 +32,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
   }
 
   void _readLocation() {
-    trivia = Trivia(title: widget.title);
+    trivia = Trivia(title: widget.title, sections: []);
     if(FileManager.saveExists(widget.location)) {
       trivia = FileManager.readFile(widget.location);
     }
@@ -45,7 +46,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> categories = trivia.categories.asMap().entries.map((e) => ListTile(
+    List<Widget> sections = trivia.sections.asMap().entries.map((e) => ListTile(
       title: Text(e.value.title),
       selected: selected == e.key,
       onTap: () {
@@ -70,7 +71,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Select a Category to Edit',
+                'Select a Section to Edit',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
@@ -82,7 +83,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                   decoration: BoxDecoration(border: Border.all(color: Theme.of(context).disabledColor, width: 5.0)),
                   width: MediaQuery.of(context).size.width * 0.8,
                   child: ListView(
-                    children: categories,
+                    children: sections,
                   ),
                 ),
               )
@@ -99,20 +100,20 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                     ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          trivia.categories.add(Category(title: 'New Category', questions: []));
+                          trivia.sections.add(JeopardySection(categories: [], title: 'New Jeopardy'));
                         });
                       }, 
-                      child: const Text('Add New Category')
+                      child: const Text('Add New Section')
                     ),
                     ElevatedButton(
                       onPressed: (selected == -1) ? null : () async {
-                        Category? newData = await Navigator.of(context).push(
+                        Section? newData = await Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => CategoryEditor(category: trivia.categories[selected]),
+                            builder: (context) => SectionEditor(section: trivia.sections[selected]),
                           )
                         );
                         setState(() {
-                          trivia.categories[selected] = (newData != null) ? newData : trivia.categories[selected];
+                          trivia.sections[selected] = (newData != null) ? newData : trivia.sections[selected];
                           selected = -1;
                         });
                       }, 
@@ -121,7 +122,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                     ElevatedButton(
                       onPressed: (selected == -1) ? null : () {
                         setState(() {
-                          trivia.categories.removeAt(selected);
+                          trivia.sections.removeAt(selected);
                           selected = -1;
                         });
                       }, 
@@ -159,7 +160,7 @@ class _TriviaEditorPageState extends State<TriviaEditorPage> {
                   ],
                 )
               ),
-            )
+            ),
           ],
         )
       )

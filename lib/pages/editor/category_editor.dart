@@ -16,13 +16,11 @@ class CategoryEditor extends StatefulWidget {
 }
 
 class _CategoryEditorState extends State<CategoryEditor> {
-  CategoryType _type = CategoryType.rapid;
   final TextEditingController _controller = TextEditingController();
   List<Question> _questions = const [];
   @override
   void initState() {
     super.initState();
-    _type = widget.category.type;
     _controller.text = widget.category.title;
     _questions = widget.category.questions;
   }
@@ -60,41 +58,6 @@ class _CategoryEditorState extends State<CategoryEditor> {
               ],
             ),
           ),
-
-          // Category Type Selection
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Category Type:',
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: DropdownMenu<CategoryType>(
-                    initialSelection: _type,
-                    dropdownMenuEntries: CategoryType.values.map((e) => DropdownMenuEntry(value: e, label: e.toString())).toList(),
-                    onSelected: (var selection) {
-                      if(selection == null) return;
-                      setState(() {
-                        if(_type != selection) {
-                          widget.category.questions = const [];
-                        }
-                        _type = selection;
-                      });
-                    },
-                  )
-                ),
-              ],
-            ),
-          ),
-
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -176,7 +139,6 @@ class _CategoryEditorState extends State<CategoryEditor> {
             child: FilledButton(
               onPressed: (){
                 widget.category.title = _controller.text;
-                widget.category.type = _type;
                 Navigator.of(context).pop(widget.category);
               },
               child: const Text('Save and Return')

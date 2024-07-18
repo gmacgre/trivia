@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:trivia/model/trivia.dart';
+import 'package:trivia/model/section/jeopardy_section.dart';
 
-class QuestionBoard extends StatelessWidget {
-  const QuestionBoard({
+class JeopardyQuestionBoard extends StatelessWidget {
+  const JeopardyQuestionBoard({
     required this.selected,
-    required this.trivia,
+    required this.section,
     this.listener,
     super.key
   });
 
   final List<List<bool>> selected;
-  final Trivia trivia;
+  final JeopardySection section;
   final QuestionBoardListener? listener;
 
   @override
@@ -26,7 +26,7 @@ class QuestionBoard extends StatelessWidget {
     );
 
     List<Widget> grid = [];
-    for(final (index, category) in trivia.categories.indexed) {
+    for(final (index, category) in section.categories.indexed) {
       // Add the Category Title Card
       grid.add(
         Container(
@@ -56,7 +56,7 @@ class QuestionBoard extends StatelessWidget {
     return GridView.count(
       shrinkWrap: true,
       scrollDirection: Axis.horizontal,
-      crossAxisCount: (trivia.categories[0].questions.length + 1),
+      crossAxisCount: (section.categories[0].questions.length + 1),
       children: grid,
     );
   }

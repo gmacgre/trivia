@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trivia/pages/answers.dart';
+import 'package:trivia/pages/answer/answers.dart';
 import 'package:trivia/pages/menu/landing.dart';
 import 'package:trivia/pages/menu/load.dart';
 import 'package:trivia/pages/menu/new.dart';

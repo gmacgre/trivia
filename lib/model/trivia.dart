@@ -1,18 +1,24 @@
-import 'package:trivia/model/category.dart';
+import 'package:trivia/model/section/jeopardy_section.dart';
+import 'package:trivia/model/section/section.dart';
 
 class Trivia {
   String title;
-  List<Category> categories;
+  List<Section> sections;
 
   Trivia({
     required this.title,
-    this.categories = const []
+    required this.sections
   });
 
   factory Trivia.fromJson(Map<String, dynamic> json) {
     return Trivia(
       title: json['title'],
-      categories: List<Category>.from((json['categories'] as List<dynamic>).map((e) => Category.fromJson(e)))
+      sections: (json['sections'] as List).map(
+        (e) => switch (e['type']) {
+          "jeopardy" => JeopardySection.fromJson(e),
+          _ => JeopardySection(categories: [], title: "Error: Bad Section Read")
+        }
+      ).toList(),
       // Initialize other fields as needed.
     );
   }
@@ -20,7 +26,7 @@ class Trivia {
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'categories': categories.map((e) => e.toJson()).toList()
+      'sections': sections.map((e) => e.toJson()).toList()
     };
   }
 }
