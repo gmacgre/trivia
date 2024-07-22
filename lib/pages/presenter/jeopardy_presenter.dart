@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:trivia/model/category.dart';
-import 'package:trivia/model/player.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/widgets/board.dart';
 
+class JeopardyPresenterController {
+  late void Function(int, int) showQuestion;
+  late void Function() showBoard;
+}
+
 class JeopardyPresenter extends StatefulWidget {
   const JeopardyPresenter({
-    required this.players,
     required this.section,
+    required this.controller,
     super.key
   });
 
   final JeopardySection section;
-  final List<Player> players;
+  final JeopardyPresenterController controller;
 
   @override
   State<JeopardyPresenter> createState() => _JeopardyPresenterState();
@@ -34,6 +38,21 @@ class _JeopardyPresenterState extends State<JeopardyPresenter> {
       }
       _previouslySelected.add(sets);
     }
+
+    // Controller Commands
+    widget.controller.showQuestion = (catIdx, qIdx) {
+      setState(() {
+        _selectedCategory = catIdx;
+        _selectedQuestion = qIdx;
+      });
+    };
+    widget.controller.showBoard = () {
+      setState(() {
+        _previouslySelected[_selectedCategory][_selectedQuestion] = true;
+        _selectedCategory = -1;
+        _selectedQuestion = -1;
+      });
+    };
     super.initState();
   }
 
@@ -56,27 +75,6 @@ class _JeopardyPresenterState extends State<JeopardyPresenter> {
                       section: widget.section,
                     )
                   ),
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: widget.players.map((e) => Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        e.name,
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                      Text(
-                        '${e.score}',
-                        style: Theme.of(context).textTheme.displaySmall,
-                      )
-                    ],
-                  )).toList(),
                 ),
               )
             ],
@@ -130,5 +128,19 @@ class _JeopardyPresenterState extends State<JeopardyPresenter> {
         ],
       )
     );
+  }
+
+  void showQuestion(int catIdx, int qIdx) {
+    setState(() {
+      _selectedCategory = catIdx;
+      _selectedQuestion = qIdx;
+    });
+  }
+
+  void showBoard() {
+    setState(() {
+      _selectedCategory = -1;
+      _selectedQuestion = -1;
+    });
   }
 }

@@ -11,11 +11,13 @@ class JeopardyAnswer extends StatefulWidget {
   const JeopardyAnswer({
     required this.section,
     required this.players,
+    required this.scoreUpdater,
     super.key
   });
 
   final JeopardySection section;
   final List<Player> players;
+  final Function(int, int) scoreUpdater;
 
   @override
   State<JeopardyAnswer> createState() => _JeopardyAnswerState();
@@ -74,65 +76,53 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   Widget _getQuestionView() {
     Question question = widget.section.categories[_selectedCategory].questions[_selectedQuestion];
     return Center(
-      child: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.6,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              question.question,
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              BaseEncoder.decode(question.answer),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: widget.players.asMap().entries.map((e) => Column(
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.players[e.key].score += (_selectedQuestion + 1) * 100;
-                      _updateScore(e.key, widget.players[e.key].score);
-                      _returnToBoard();
-                    },
-                    child: Text('${e.value.name} Correct')
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      widget.players[e.key].score -= (_selectedQuestion + 1) * 100;
-                      _updateScore(e.key, widget.players[e.key].score);
-                    },
-                    child: Text('${e.value.name} Incorrect')
-                  ),
-                ],
-              )).toList(),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                DesktopMultiWindow.invokeMethod(0, 'buzz');
-              },
-              child: const Text('Buzzer')
-            ),        
-            ElevatedButton(
-              onPressed: _returnToBoard,
-              child: const Text('Return to Board')
-            )
-          ],
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            question.question,
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            BaseEncoder.decode(question.answer),
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: widget.players.asMap().entries.map((e) => Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * 100);
+                    _returnToBoard();
+                  },
+                  child: Text('${e.value.name} Correct')
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * 100);
+                  },
+                  child: Text('${e.value.name} Incorrect')
+                ),
+              ],
+            )).toList(),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              DesktopMultiWindow.invokeMethod(0, 'buzz');
+            },
+            child: const Text('Buzzer')
+          ),        
+          ElevatedButton(
+            onPressed: _returnToBoard,
+            child: const Text('Return to Board')
+          )
+        ],
       ),
     );
-  }
-
-  void _updateScore(int idx, int score) {
-    DesktopMultiWindow.invokeMethod(0, 'setScore', {
-      'score': score,
-      'index': idx
-    });
   }
 
   void _returnToBoard() {
@@ -141,7 +131,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       _selectedCategory = -1;
       _selectedQuestion = -1;
     });
-    DesktopMultiWindow.invokeMethod(0, 'board');
+    DesktopMultiWindow.invokeMethod(0, 'jeopardyShowBoard');
   }
 
   void _setSelection(int category, int question) {
@@ -149,7 +139,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       _selectedCategory = category;
       _selectedQuestion = question;
     });
-    DesktopMultiWindow.invokeMethod(0, 'selection', {
+    DesktopMultiWindow.invokeMethod(0, 'jeopardyShowQuestion', {
       'category': category,
       'question': question
     });
