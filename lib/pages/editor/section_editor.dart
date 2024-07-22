@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
+import 'package:trivia/pages/editor/bowl/bowl_section_editor.dart';
 import 'package:trivia/pages/editor/jeopardy/jeopardy_section_editor.dart';
 
 class SectionEditor extends StatefulWidget {
@@ -82,7 +83,9 @@ class _SectionEditorState extends State<SectionEditor> {
                 SectionType.jeopardy => JeopardySectionEditor(
                   section: section as JeopardySection,
                 ),
-                SectionType.bowl => const Placeholder()
+                SectionType.bowl => BowlSectionEditor(
+                  section: section as BowlSection
+                )
               },
             ),
             Expanded(
@@ -107,7 +110,7 @@ class _SectionEditorState extends State<SectionEditor> {
     setState(() {
       section = switch(e) {
         SectionType.jeopardy => JeopardySection(categories: [], title: section.title),
-        SectionType.bowl => BowlSection(title: section.title)
+        SectionType.bowl => BowlSection(title: section.title, questions: [])
       };
     });
   }

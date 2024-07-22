@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trivia/logic/base_encoder.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/question.dart';
+import 'package:trivia/pages/editor/question_editor.dart';
 
 class CategoryEditor extends StatefulWidget {
   final Category category;
@@ -59,62 +60,27 @@ class _CategoryEditorState extends State<CategoryEditor> {
             ),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: _questions.asMap().entries.map((e) => Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: TextEditingController(text: _questions[e.key].question),
-                          onChanged: (value) {
-                            _questions[e.key].question = value;
-                          },
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: TextEditingController(text: BaseEncoder.decode(_questions[e.key].answer)),
-                          onChanged: (value) {
-                              _questions[e.key].answer = BaseEncoder.encode(value);
-                          },
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Image Link'
-                          ),
-                          controller: TextEditingController(text: _questions[e.key].imageLink),
-                          onChanged: (value) {
-                              _questions[e.key].imageLink = value;
-                          },
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _questions.removeAt(e.key);
-                          setState(() {
-                            _questions = _questions;
-                          });
-                        }, 
-                        child: const Text('Delete')
-                      ),
-                    )
-                  ],
-                )).toList(),
-              ),
+            child: QuestionEditor(
+              questions: _questions,
+              updater: (idx, value, type) {
+                switch(type) {
+                  case 0: {
+                    _questions[idx].question = value;
+                  }
+                  case 1: {
+                    _questions[idx].answer = BaseEncoder.encode(value);
+                  }
+                  case 2: {
+                    _questions[idx].imageLink = value;
+                  }
+                }
+              },
+              deleter: (idx) {
+                _questions.removeAt(idx);
+                setState(() {
+                  _questions = _questions;
+                });
+              },
             )
           ),
 
