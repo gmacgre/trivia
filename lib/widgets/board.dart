@@ -5,6 +5,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
   const JeopardyQuestionBoard({
     required this.selected,
     required this.section,
+    required this.value,
     this.listener,
     super.key
   });
@@ -12,6 +13,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
   final List<List<bool>> selected;
   final JeopardySection section;
   final QuestionBoardListener? listener;
+  final int value;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
           } : null,
           child: Ink(
             decoration: questionDecoration,
-            child: Center(child: (!selected[index][e.key]) ? Text('${((e.key + 1) * 100)}', style: Theme.of(context).textTheme.headlineLarge,) : null),
+            child: Center(child: (!selected[index][e.key]) ? Text('${((e.key + 1) * value)}', style: Theme.of(context).textTheme.headlineLarge,) : null),
           ),
         )
       ).toList());

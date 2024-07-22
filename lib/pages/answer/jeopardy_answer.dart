@@ -1,4 +1,3 @@
-import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
 import 'package:trivia/logic/base_encoder.dart';
 import 'package:trivia/model/category.dart';
@@ -12,12 +11,16 @@ class JeopardyAnswer extends StatefulWidget {
     required this.section,
     required this.players,
     required this.scoreUpdater,
+    required this.showBoard,
+    required this.showQuestion,
     super.key
   });
 
   final JeopardySection section;
   final List<Player> players;
   final Function(int, int) scoreUpdater;
+  final Function(int, int) showQuestion;
+  final Function() showBoard;
 
   @override
   State<JeopardyAnswer> createState() => _JeopardyAnswerState();
@@ -65,6 +68,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       padding: const EdgeInsets.all(8.0),
       child: Center(
         child: JeopardyQuestionBoard(
+          value: widget.section.value,
           selected: _previouslySelected,
           listener: _listener, 
           section: widget.section,
@@ -111,12 +115,6 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
             )).toList(),
           ),
           ElevatedButton(
-            onPressed: () {
-              DesktopMultiWindow.invokeMethod(0, 'buzz');
-            },
-            child: const Text('Buzzer')
-          ),        
-          ElevatedButton(
             onPressed: _returnToBoard,
             child: const Text('Return to Board')
           )
@@ -126,23 +124,21 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   }
 
   void _returnToBoard() {
+    widget.showBoard();
     setState(() {
       _previouslySelected[_selectedCategory][_selectedQuestion] = true;
       _selectedCategory = -1;
       _selectedQuestion = -1;
     });
-    DesktopMultiWindow.invokeMethod(0, 'jeopardyShowBoard');
   }
 
   void _setSelection(int category, int question) {
+    widget.showQuestion(category, question);
     setState(() {
       _selectedCategory = category;
       _selectedQuestion = question;
     });
-    DesktopMultiWindow.invokeMethod(0, 'jeopardyShowQuestion', {
-      'category': category,
-      'question': question
-    });
+    
   }
 }
 

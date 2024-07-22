@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/pages/editor/jeopardy/category_editor.dart';
-import 'package:trivia/pages/editor/selector.dart';
+import 'package:trivia/widgets/selector.dart';
 
 class JeopardySectionEditor extends StatefulWidget {
   const JeopardySectionEditor({
@@ -21,12 +22,29 @@ class _JeopardySectionEditorState extends State<JeopardySectionEditor> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController controller = TextEditingController();
+    controller.text = '${widget.section.value}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: MediaQuery.of(context).size.width,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: controller,
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly
+            ],
+            onChanged: (value) {
+              if(value == '') {
+                value = '0';
+              }
+              widget.section.value = int.parse(value);
+            },
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),

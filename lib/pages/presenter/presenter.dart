@@ -155,13 +155,12 @@ class _PresenterPageState extends State<PresenterPage> {
           };
         });
       }
-      case 'board': {
+      case 'sections': {
         setState(() {
           _selectedSection = -1;
         });
       }
       case 'jeopardyShowQuestion': {
-
         _jeopardyController.showQuestion(arguments['category'], arguments['question']);
       }
       case 'jeopardyShowBoard': {

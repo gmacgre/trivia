@@ -5,9 +5,11 @@ final class JeopardySection implements Section {
   JeopardySection({
     required this.categories,
     required this.title,
+    this.value = 100
   });
 
   List<Category> categories;
+  int value;
   
   @override
   String title;
@@ -20,14 +22,16 @@ final class JeopardySection implements Section {
     return {
       'title': title,
       'type': type.name,
-      'categories': categories
+      'categories': categories,
+      'value': value
     };
   }
 
   factory JeopardySection.fromJson(Map<String, dynamic> json) {
     return JeopardySection(
       title: json['title'],
-      categories: List<Category>.from((json['categories'] as List<dynamic>).map((e) => Category.fromJson(e)))
+      categories: List<Category>.from((json['categories'] as List<dynamic>).map((e) => Category.fromJson(e))),
+      value: json['value']
     );
   }
 }

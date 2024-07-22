@@ -4,7 +4,7 @@ import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/pages/editor/section_editor.dart';
-import 'package:trivia/pages/editor/selector.dart';
+import 'package:trivia/widgets/selector.dart';
 import 'package:trivia/pages/presenter/presenter.dart';
 
 class TriviaEditorPage extends StatefulWidget {

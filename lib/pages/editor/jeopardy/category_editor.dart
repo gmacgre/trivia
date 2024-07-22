@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:trivia/logic/base_encoder.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/question.dart';
-import 'package:trivia/pages/editor/question_editor.dart';
+import 'package:trivia/widgets/question_editor.dart';
 
 class CategoryEditor extends StatefulWidget {
   final Category category;

@@ -65,12 +65,13 @@ class _JeopardyPresenterState extends State<JeopardyPresenter> {
         children: [
           Column(
             children: [
+              Text(widget.section.title, style: Theme.of(context).textTheme.displaySmall,),
               Expanded(
-                flex: 6,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
                     child: JeopardyQuestionBoard(
+                      value: widget.section.value,
                       selected: _previouslySelected,
                       section: widget.section,
                     )

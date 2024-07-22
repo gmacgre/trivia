@@ -150,7 +150,16 @@ class _AnswersPageState extends State<AnswersPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton(
                       onPressed: () {
-                        DesktopMultiWindow.invokeMethod(0, 'board');
+                        DesktopMultiWindow.invokeMethod(0, 'buzz');
+                      },
+                      icon: const Icon(Icons.access_alarm, color: Colors.white70,)
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: () {
+                        DesktopMultiWindow.invokeMethod(0, 'sections');
                         setState(() {
                           _currentSection = -1;
                         });
@@ -204,7 +213,16 @@ class _AnswersPageState extends State<AnswersPage> {
         JeopardySection => JeopardyAnswer(
           section: selected as JeopardySection,
           players: _players,
-          scoreUpdater: _updateScore
+          scoreUpdater: _updateScore,
+          showBoard: () {
+            DesktopMultiWindow.invokeMethod(0, 'jeopardyShowBoard');
+          },
+          showQuestion: (catIdx, qIdx) {
+            DesktopMultiWindow.invokeMethod(0, 'jeopardyShowQuestion', {
+              'category': catIdx,
+              'question': qIdx
+            });
+          },
         ),
         BowlSection => const Placeholder(),
         _ => const Placeholder()
