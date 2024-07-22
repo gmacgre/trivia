@@ -33,17 +33,21 @@ class _JeopardySectionEditorState extends State<JeopardySectionEditor> {
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: TextField(
-            controller: controller,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
-            ],
-            onChanged: (value) {
-              if(value == '') {
-                value = '0';
-              }
-              widget.section.value = int.parse(value);
-            },
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: TextField(
+              controller: controller,
+              textAlign: TextAlign.center,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              onChanged: (value) {
+                if(value == '') {
+                  value = '0';
+                }
+                widget.section.value = int.parse(value);
+              },
+            ),
           ),
         ),
         Padding(

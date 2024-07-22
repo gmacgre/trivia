@@ -14,4 +14,5 @@ abstract class Section {
 enum SectionType {
   jeopardy,
   bowl,
+  finalQuestion
 }
