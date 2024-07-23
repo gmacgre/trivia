@@ -241,6 +241,7 @@ class _AnswersPageState extends State<AnswersPage> {
             DesktopMultiWindow.invokeMethod(0, 'finalShowQuestion');
           },
           updateScore: _updateScore,
+          players: _players,
         ),
         _ => const Placeholder()
       };
