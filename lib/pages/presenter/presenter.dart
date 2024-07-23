@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/model/player.dart';
 import 'package:trivia/model/section/bowl_section.dart';
+import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/pages/presenter/bowl_presenter.dart';
+import 'package:trivia/pages/presenter/final_question_presenter.dart';
 import 'package:trivia/pages/presenter/jeopardy_presenter.dart';
 
 class PresenterPage extends StatefulWidget {
@@ -28,17 +30,15 @@ class _PresenterPageState extends State<PresenterPage> {
   int _selectedSection = -1;
   late Widget toPresent = const Placeholder();
   final JeopardyPresenterController _jeopardyController = JeopardyPresenterController();
-
+  final FinalQuestionPresenterController _finalController = FinalQuestionPresenterController();
   @override
   void initState() {
     super.initState();
 
     // Build Audio and Window Management
     _audio = AudioPlayer();
-    _audio.setReleaseMode(ReleaseMode.stop);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _audio.setSource(AssetSource('times-up.mp3'));
-    });
+    _audio.setVolume(100.0);
+
     DesktopMultiWindow.createWindow(FileManager.encode(widget.trivia)).then((value) => setState((){
       window = value;
       window 
@@ -112,8 +112,9 @@ class _PresenterPageState extends State<PresenterPage> {
 
 
   // This is where all Controller methods are initially processed
-  void _processMessage(String method, dynamic arguments) {
+  void _processMessage(String method, dynamic arguments) async {
     switch (method) {
+      // Player Management Calls
       case 'newPlayer': {
         setState(() {
           _players.add(
@@ -134,21 +135,39 @@ class _PresenterPageState extends State<PresenterPage> {
           _players[arguments['index']].score = arguments['score'];
         });
       }
+
+      // Sound Calls
       case 'buzz': {
-        _audio.resume();
+        _audio.setSource(AssetSource('times-up.mp3')).then((value) => _audio.resume());
       }
+      case 'theme': {
+        _audio.setSource(AssetSource('jeopardy-theme.mp3')).then((value) => _audio.resume());
+      }
+
+      // End Presenting
       case 'pop': {
         Navigator.of(context).pop();
       }
+
+      // Section Calls
       case 'launchSection': {
+        _selectedSection = arguments as int;
+        if(widget.trivia.sections[_selectedSection] is JeopardySection) {
+          await _audio.setSource(AssetSource('fill.mp3'));
+          _audio.resume();
+        }
         setState(() {
-          _selectedSection = arguments as int;
+          _selectedSection = _selectedSection;
           toPresent = switch (widget.trivia.sections[_selectedSection].runtimeType) {
             JeopardySection => JeopardyPresenter(
               controller: _jeopardyController,
               section: widget.trivia.sections[_selectedSection] as JeopardySection
             ),
             BowlSection => const BowlPresenter(
+            ),
+            FinalSection => FinalQuestionPresenter(
+              section: widget.trivia.sections[_selectedSection] as FinalSection, 
+              controller: _finalController
             ),
             // Should never reach here
             _ => const Placeholder(),
@@ -160,12 +179,28 @@ class _PresenterPageState extends State<PresenterPage> {
           _selectedSection = -1;
         });
       }
+
+      // Jeopardy Section Calls
       case 'jeopardyShowQuestion': {
         _jeopardyController.showQuestion(arguments['category'], arguments['question']);
       }
       case 'jeopardyShowBoard': {
         _jeopardyController.showBoard();
       }
+
+      // Final Question Section Calls
+      case 'finalShowCategory': {
+        await _audio.setSource(AssetSource('reveal.mp3'));
+        _audio.resume();
+        _finalController.showNext();
+      }
+      case 'finalShowQuestion': {
+        await _audio.setSource(AssetSource('reveal.mp3'));
+        _audio.resume();
+        _finalController.showNext();
+      }
+
+      // Bowl Section Calls
     }
   }
 }

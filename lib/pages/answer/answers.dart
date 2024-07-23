@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:trivia/logic/file_manager.dart';
 import 'package:trivia/model/player.dart';
 import 'package:trivia/model/section/bowl_section.dart';
+import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
+import 'package:trivia/pages/answer/final_question_answer.dart';
 import 'package:trivia/pages/answer/jeopardy_answer.dart';
 import 'package:trivia/pages/answer/section_selection.dart';
 
@@ -143,40 +145,45 @@ class _AnswersPageState extends State<AnswersPage> {
             Container(
               decoration: BoxDecoration(color: Theme.of(context).primaryColorDark),
               child: Row(
+                
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
+                  [
+                    'buzz',
+                    Icons.access_alarm,
+                    () {}
+                  ],
+                  [
+                    'theme',
+                    Icons.music_note,
+                    () {}
+                  ],
+                  [
+                    'sections',
+                    Icons.tv,
+                    () {
+                      setState(() {
+                        _currentSection = -1;
+                      });
+                    }
+                  ],
+                  [
+                    'pop',
+                    Icons.flag,
+                    () {}
+                  ],
+                ].map((e) => Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton(
                       onPressed: () {
-                        DesktopMultiWindow.invokeMethod(0, 'buzz');
+                        DesktopMultiWindow.invokeMethod(0, e[0] as String);
+                        (e[2] as Function())();
                       },
-                      icon: const Icon(Icons.access_alarm, color: Colors.white70,)
+                      icon: Icon(e[1] as IconData, color: Colors.white70,)
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        DesktopMultiWindow.invokeMethod(0, 'sections');
-                        setState(() {
-                          _currentSection = -1;
-                        });
-                      },
-                      icon: const Icon(Icons.tv, color: Colors.white70,)
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: IconButton(
-                      onPressed: () {
-                        DesktopMultiWindow.invokeMethod(0, 'pop');
-                      },
-                      icon: const Icon(Icons.flag, color: Colors.white70,)
-                    ),
-                  ),
-                ],
+                ).toList(),
               ),
             )
           ],
@@ -225,6 +232,16 @@ class _AnswersPageState extends State<AnswersPage> {
           },
         ),
         BowlSection => const Placeholder(),
+        FinalSection => FinalQuestionAnswer(
+          section: selected as FinalSection,
+          showCategory: () {
+            DesktopMultiWindow.invokeMethod(0, 'finalShowCategory');
+          },
+          showQuestion: () {
+            DesktopMultiWindow.invokeMethod(0, 'finalShowQuestion');
+          },
+          updateScore: _updateScore,
+        ),
         _ => const Placeholder()
       };
     }
