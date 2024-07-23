@@ -8,6 +8,7 @@ import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
+import 'package:trivia/pages/answer/bowl_answer.dart';
 import 'package:trivia/pages/answer/final_question_answer.dart';
 import 'package:trivia/pages/answer/jeopardy_answer.dart';
 import 'package:trivia/pages/answer/section_selection.dart';
@@ -231,7 +232,14 @@ class _AnswersPageState extends State<AnswersPage> {
             });
           },
         ),
-        BowlSection => const Placeholder(),
+        BowlSection => BowlAnswer(
+          players: _players,
+          section: selected as BowlSection,
+          updateScore: _updateScore,
+          showQuestion: (idx) {
+
+          },
+        ),
         FinalSection => FinalQuestionAnswer(
           section: selected as FinalSection,
           showCategory: () {

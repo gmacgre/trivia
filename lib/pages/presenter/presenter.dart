@@ -163,7 +163,8 @@ class _PresenterPageState extends State<PresenterPage> {
               controller: _jeopardyController,
               section: widget.trivia.sections[_selectedSection] as JeopardySection
             ),
-            BowlSection => const BowlPresenter(
+            BowlSection => BowlPresenter(
+              section: widget.trivia.sections[_selectedSection] as BowlSection,
             ),
             FinalSection => FinalQuestionPresenter(
               section: widget.trivia.sections[_selectedSection] as FinalSection, 

@@ -5,6 +5,7 @@ class BowlSection implements Section{
 
   BowlSection({
     required this.title,
+    required this.value,
     required this.questions
   });
 
@@ -15,20 +16,23 @@ class BowlSection implements Section{
   final SectionType type = SectionType.bowl;
 
   List<Question> questions;
+  int value;
 
   @override
   Map<String, dynamic> toJson() {
     return {
       'title': title,
       'type': type.name,
-      'questions': questions
+      'questions': questions,
+      'value': value
     };
   }
 
   factory BowlSection.fromJson(Map<String, dynamic> json) {
     return BowlSection(
       title: json['title'],
-      questions: List<Question>.from((json['questions'] as List<dynamic>).map((e) => Question.fromJson(e)))
+      questions: List<Question>.from((json['questions'] as List<dynamic>).map((e) => Question.fromJson(e))),
+      value: json['value']
     );
   }
 }

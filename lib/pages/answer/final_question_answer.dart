@@ -36,6 +36,11 @@ class _FinalQuestionAnswerState extends State<FinalQuestionAnswer> {
 
   @override
   Widget build(BuildContext context) {
+    if(wagers.length < widget.players.length) {
+      while(wagers.length < widget.players.length) {
+        wagers.add(0);
+      }
+    }
     return SafeArea(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -68,6 +73,7 @@ class _FinalQuestionAnswerState extends State<FinalQuestionAnswer> {
               ],
             ),
           ),
+          Expanded(child: Text(widget.section.name, style: Theme.of(context).textTheme.titleMedium)),
           Expanded(child: Text(widget.section.question.question, style: Theme.of(context).textTheme.titleMedium,)),
           Expanded(child: Text(BaseEncoder.decode(widget.section.question.answer), style: Theme.of(context).textTheme.titleLarge,)),
           Expanded(
