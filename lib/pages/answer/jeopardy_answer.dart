@@ -29,6 +29,7 @@ class JeopardyAnswer extends StatefulWidget {
 class _JeopardyAnswerState extends State<JeopardyAnswer> {
 
   final List<List<bool>> _previouslySelected = [];
+  late List<bool> _alreadyDeducted;
   late final QuestionBoardListener _listener;
   int _selectedCategory = -1;
   int _selectedQuestion = -1;
@@ -43,11 +44,17 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       _previouslySelected.add(sets);
     }
     _listener = _AnswerQuestionBoardListener(parent: this);
+    _alreadyDeducted = widget.players.map((e) => false).toList();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if(_alreadyDeducted.length < widget.players.length) {
+      while(_alreadyDeducted.length < widget.players.length) {
+        _alreadyDeducted.add(false);
+      }
+    }
     return Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -100,14 +107,15 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * 100);
+                    widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * widget.section.value);
                     _returnToBoard();
                   },
                   child: Text('${e.value.name} Correct')
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * 100);
+                  onPressed: (_alreadyDeducted[e.key])? null : () {
+                    widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * widget.section.value);
+                    _alreadyDeducted[e.key] = true;
                   },
                   child: Text('${e.value.name} Incorrect')
                 ),
@@ -126,6 +134,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   void _returnToBoard() {
     widget.showBoard();
     setState(() {
+      _alreadyDeducted = widget.players.map((e) => false).toList();
       _previouslySelected[_selectedCategory][_selectedQuestion] = true;
       _selectedCategory = -1;
       _selectedQuestion = -1;
