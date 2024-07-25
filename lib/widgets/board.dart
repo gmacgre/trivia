@@ -43,7 +43,8 @@ class JeopardyQuestionBoard extends StatelessWidget {
           child: Center(
             child: Text(
               category.title,
-              style: TextStyle(color: Colors.white, fontSize: (listener == null)? 25 : 10),
+              style: const TextStyle(color: Colors.white, fontSize: 10),
+              textScaler: (listener != null) ? const TextScaler.linear(1) : const TextScaler.linear(2),
               textAlign: TextAlign.center,
             ),
           ),

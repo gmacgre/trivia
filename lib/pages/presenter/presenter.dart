@@ -94,7 +94,7 @@ class _PresenterPageState extends State<PresenterPage> {
                     children: [
                       Text(
                         e.name,
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.displaySmall,
                       ),
                       Text(
                         '${e.score}',
