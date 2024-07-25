@@ -231,6 +231,9 @@ class _AnswersPageState extends State<AnswersPage> {
               'question': qIdx
             });
           },
+          showDailyDouble: () {
+            DesktopMultiWindow.invokeMethod(0, 'jeopardyDailyDouble');
+          },
         ),
         BowlSection => BowlAnswer(
           players: _players,

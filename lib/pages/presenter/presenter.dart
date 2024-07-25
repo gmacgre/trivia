@@ -25,7 +25,8 @@ class PresenterPage extends StatefulWidget {
 
 class _PresenterPageState extends State<PresenterPage> {
   late final WindowController window;
-  late AudioPlayer _audio = AudioPlayer();
+  late AudioPlayer _longAudio;
+  late AudioPlayer _shortAudio;
   final List<Player> _players = [];
   int _selectedSection = -1;
   late Widget toPresent = const Placeholder();
@@ -36,8 +37,8 @@ class _PresenterPageState extends State<PresenterPage> {
     super.initState();
 
     // Build Audio and Window Management
-    _audio = AudioPlayer();
-    _audio.setVolume(100.0);
+    _longAudio = AudioPlayer();
+    _shortAudio = AudioPlayer();
 
     DesktopMultiWindow.createWindow(FileManager.encode(widget.trivia)).then((value) => setState((){
       window = value;
@@ -55,7 +56,7 @@ class _PresenterPageState extends State<PresenterPage> {
   @override
   void dispose() {
     window.close();
-    _audio.dispose();
+    _longAudio.dispose();
     super.dispose();
   }
 
@@ -138,10 +139,10 @@ class _PresenterPageState extends State<PresenterPage> {
 
       // Sound Calls
       case 'buzz': {
-        _audio.setSource(AssetSource('times-up.mp3')).then((value) => _audio.resume());
+        _shortAudio.setSource(AssetSource('times-up.mp3')).then((value) => _shortAudio.resume());
       }
       case 'theme': {
-        _audio.setSource(AssetSource('jeopardy-theme.mp3')).then((value) => _audio.resume());
+        _longAudio.setSource(AssetSource('jeopardy-theme.mp3')).then((value) => _longAudio.resume());
       }
 
       // End Presenting
@@ -153,8 +154,8 @@ class _PresenterPageState extends State<PresenterPage> {
       case 'launchSection': {
         _selectedSection = arguments as int;
         if(widget.trivia.sections[_selectedSection] is JeopardySection) {
-          await _audio.setSource(AssetSource('fill.mp3'));
-          _audio.resume();
+          await _longAudio.setSource(AssetSource('fill.mp3'));
+          _longAudio.resume();
         }
         setState(() {
           _selectedSection = _selectedSection;
@@ -188,16 +189,21 @@ class _PresenterPageState extends State<PresenterPage> {
       case 'jeopardyShowBoard': {
         _jeopardyController.showBoard();
       }
+      case 'jeopardyDailyDouble': {
+        await _shortAudio.setSource(AssetSource('daily-double.mp3'));
+        await _shortAudio.resume();
+        _jeopardyController.showDailyDouble();
+      }
 
       // Final Question Section Calls
       case 'finalShowCategory': {
-        await _audio.setSource(AssetSource('reveal.mp3'));
-        _audio.resume();
+        await _shortAudio.setSource(AssetSource('reveal.mp3'));
+        _shortAudio.resume();
         _finalController.showNext();
       }
       case 'finalShowQuestion': {
-        await _audio.setSource(AssetSource('reveal.mp3'));
-        _audio.resume();
+        await _shortAudio.setSource(AssetSource('reveal.mp3'));
+        _shortAudio.resume();
         _finalController.showNext();
       }
 

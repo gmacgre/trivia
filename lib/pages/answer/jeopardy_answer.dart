@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:trivia/logic/base_encoder.dart';
 import 'package:trivia/model/category.dart';
 import 'package:trivia/model/player.dart';
@@ -13,6 +15,7 @@ class JeopardyAnswer extends StatefulWidget {
     required this.scoreUpdater,
     required this.showBoard,
     required this.showQuestion,
+    required this.showDailyDouble,
     super.key
   });
 
@@ -21,6 +24,7 @@ class JeopardyAnswer extends StatefulWidget {
   final Function(int, int) scoreUpdater;
   final Function(int, int) showQuestion;
   final Function() showBoard;
+  final Function() showDailyDouble;
 
   @override
   State<JeopardyAnswer> createState() => _JeopardyAnswerState();
@@ -30,8 +34,12 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
 
   final List<List<bool>> _previouslySelected = [];
   late List<bool> _alreadyDeducted;
+  late Set<List<int>> _dailyDoubles;
   late final QuestionBoardListener _listener;
+  bool _doubleShown = false;
+  bool _doubleClue = false;
   int _selectedCategory = -1;
+  String wager = '';
   int _selectedQuestion = -1;
   @override
   void initState() {
@@ -45,6 +53,12 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
     }
     _listener = _AnswerQuestionBoardListener(parent: this);
     _alreadyDeducted = widget.players.map((e) => false).toList();
+    _dailyDoubles = {};
+    Random rng = Random();
+    while(_dailyDoubles.length < (widget.section.value) / 200) {
+      // Make new Daily Double Section
+      _dailyDoubles.add([rng.nextInt(widget.section.categories.length), rng.nextInt(widget.section.categories[0].questions.length)]);
+    }
     super.initState();
   }
 
@@ -56,18 +70,18 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       }
     }
     return Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            widget.section.title,
-            style: Theme.of(context).textTheme.displaySmall,
-          ),
-          Expanded(
-            child: (_selectedCategory == -1 && _selectedQuestion == -1) ? _getBoard() : _getQuestionView()
-          ),
-        ],
-      );
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          widget.section.title,
+          style: Theme.of(context).textTheme.displaySmall,
+        ),
+        Expanded(
+          child: (_selectedCategory == -1 && _selectedQuestion == -1) ? _getBoard() : _getQuestionView()
+        ),
+      ],
+    );
   }
 
   Widget _getBoard() {
@@ -79,6 +93,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
           selected: _previouslySelected,
           listener: _listener, 
           section: widget.section,
+          dailyDoubles: _dailyDoubles
         )
       ),
     );
@@ -86,6 +101,91 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
 
   Widget _getQuestionView() {
     Question question = widget.section.categories[_selectedCategory].questions[_selectedQuestion];
+    if(_doubleShown) {
+      TextEditingController wagerController = TextEditingController()..text = wager;
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              question.question,
+              style: Theme.of(context).textTheme.labelLarge,
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              BaseEncoder.decode(question.answer),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            Text(
+              'Max Wager: ${widget.section.value * 5} or Player Score',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: TextField(
+                textAlign: TextAlign.center,
+                controller: wagerController,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                onChanged: (value) {
+                  wager = value;
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: (_doubleClue) ? null : () {
+                widget.showQuestion(_selectedCategory, _selectedQuestion);
+                setState(() {
+                  _doubleClue = true;
+                });
+              }, 
+              child: const Text('Reveal Clue')
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: widget.players.asMap().entries.map((e) => Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(e.value.name, style: Theme.of(context).textTheme.labelMedium,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: (!_doubleClue) ? null :  () {
+                            if(wagerController.text == '') wagerController.text = '0';
+                            widget.scoreUpdater(e.key, widget.players[e.key].score + int.parse(wagerController.text));
+                            _returnToBoard();
+                          },
+                          icon: const Icon(Icons.add_circle)
+                        ),
+                        IconButton(
+                          onPressed: (!_doubleClue) ? null : () {
+                            if(wagerController.text == '') wagerController.text = '0';
+                            widget.scoreUpdater(e.key, widget.players[e.key].score - int.parse(wagerController.text));
+                            _returnToBoard();
+                          },
+                          icon: const Icon(Icons.remove_circle)
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )).toList(),
+            ),
+            ElevatedButton(
+              onPressed: (!_doubleClue) ? null : () {
+                _returnToBoard();
+              },
+              child: const Text('Return to Board')
+            )
+          ],
+        ),
+      );
+    }
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -93,32 +193,40 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
         children: [
           Text(
             question.question,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
           Text(
             BaseEncoder.decode(question.answer),
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.displaySmall,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: widget.players.asMap().entries.map((e) => Column(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * widget.section.value);
-                    _returnToBoard();
-                  },
-                  child: Text('${e.value.name} Correct')
-                ),
-                ElevatedButton(
-                  onPressed: (_alreadyDeducted[e.key])? null : () {
-                    widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * widget.section.value);
-                    _alreadyDeducted[e.key] = true;
-                  },
-                  child: Text('${e.value.name} Incorrect')
-                ),
+                Text(e.value.name, style: Theme.of(context).textTheme.labelMedium,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * widget.section.value);
+                        _returnToBoard();
+                      },
+                      icon: const Icon(Icons.add_circle)
+                    ),
+                    IconButton(
+                      onPressed: (_alreadyDeducted[e.key]) ? null : () {
+                        widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * widget.section.value);
+                        setState(() {
+                          _alreadyDeducted[e.key] = true;
+                        });
+                      },
+                      icon: const Icon(Icons.remove_circle)
+                    ),
+                  ],
+                )
               ],
             )).toList(),
           ),
@@ -134,6 +242,9 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   void _returnToBoard() {
     widget.showBoard();
     setState(() {
+      wager = '0';
+      _doubleShown = false;
+      _doubleClue = false;
       _alreadyDeducted = widget.players.map((e) => false).toList();
       _previouslySelected[_selectedCategory][_selectedQuestion] = true;
       _selectedCategory = -1;
@@ -142,12 +253,31 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   }
 
   void _setSelection(int category, int question) {
-    widget.showQuestion(category, question);
-    setState(() {
-      _selectedCategory = category;
-      _selectedQuestion = question;
-    });
-    
+    if(!_isDailyDouble(category, question)) {
+      widget.showQuestion(category, question);
+      setState(() {
+        _selectedCategory = category;
+        _selectedQuestion = question;
+      });
+    }
+    else {
+      widget.showDailyDouble();
+      setState(() {
+        _selectedCategory = category;
+        _selectedQuestion = question;
+        _doubleShown = true;
+      });
+    }
+  }
+
+  bool _isDailyDouble(int x, int y) {
+    var check  = _dailyDoubles.toList();
+    for(var pair in check) {
+      if(pair[0] == x && pair[1] == y) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 

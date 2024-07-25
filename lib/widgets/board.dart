@@ -7,6 +7,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
     required this.section,
     required this.value,
     this.listener,
+    this.dailyDoubles,
     super.key
   });
 
@@ -14,6 +15,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
   final JeopardySection section;
   final QuestionBoardListener? listener;
   final int value;
+  final Set<List<int>>? dailyDoubles;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,11 @@ class JeopardyQuestionBoard extends StatelessWidget {
       border: Border.all(color: Colors.grey)
     );
 
+    BoxDecoration doubleDecoration = BoxDecoration(
+      color: Colors.red[300],
+      border: Border.all(color: Colors.grey)
+    );
+
     List<Widget> grid = [];
     for(final (index, category) in section.categories.indexed) {
       // Add the Category Title Card
@@ -36,7 +43,7 @@ class JeopardyQuestionBoard extends StatelessWidget {
           child: Center(
             child: Text(
               category.title,
-              style: TextStyle(color: Colors.white, fontSize: (listener == null)? 25 : 13),
+              style: TextStyle(color: Colors.white, fontSize: (listener == null)? 25 : 10),
               textAlign: TextAlign.center,
             ),
           ),
@@ -49,8 +56,8 @@ class JeopardyQuestionBoard extends StatelessWidget {
             listener?.processTap(index, e.key);
           } : null,
           child: Ink(
-            decoration: questionDecoration,
-            child: Center(child: (!selected[index][e.key]) ? Text('${((e.key + 1) * value)}', style: Theme.of(context).textTheme.headlineLarge,) : null),
+            decoration: (dailyDoubles != null && _isDailyDouble(index, e.key)) ? doubleDecoration : questionDecoration,
+            child: Center(child: (!selected[index][e.key]) ? Text('${((e.key + 1) * value)}', style: (listener == null) ? Theme.of(context).textTheme.headlineLarge:Theme.of(context).textTheme.labelLarge ) : null),
           ),
         )
       ).toList());
@@ -61,6 +68,16 @@ class JeopardyQuestionBoard extends StatelessWidget {
       crossAxisCount: (section.categories[0].questions.length + 1),
       children: grid,
     );
+  }
+
+  bool _isDailyDouble(int x, int y) {
+    var check  = dailyDoubles!.toList();
+    for(var pair in check) {
+      if(pair[0] == x && pair[1] == y) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
