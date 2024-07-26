@@ -42,7 +42,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   bool _isDouble = false;
   bool _doubleClue = false;
   int _selectedCategory = -1;
-  String wager = '';
+  String wager = '0';
   int _selectedQuestion = -1;
 
   @override
@@ -145,14 +145,17 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: (_doubleClue) ? null : () {
-                  widget.showQuestion(_selectedCategory, _selectedQuestion);
-                  setState(() {
-                    _doubleClue = true;
-                  });
-                }, 
-                child: const Text('Reveal Clue')
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: (_doubleClue) ? null : () {
+                    widget.showQuestion(_selectedCategory, _selectedQuestion);
+                    setState(() {
+                      _doubleClue = true;
+                    });
+                  }, 
+                  child: const Text('Reveal Clue')
+                ),
               ),
             ],
           ) : const SizedBox(width: 0, height: 0,),
