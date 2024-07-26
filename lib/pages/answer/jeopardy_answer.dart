@@ -36,11 +36,15 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   late List<bool> _alreadyDeducted;
   late Set<List<int>> _dailyDoubles;
   late final QuestionBoardListener _listener;
-  bool _doubleShown = false;
+
+  Question? toShow;
+
+  bool _isDouble = false;
   bool _doubleClue = false;
   int _selectedCategory = -1;
   String wager = '';
   int _selectedQuestion = -1;
+
   @override
   void initState() {
     // BUILDING SELECTION BOARD
@@ -78,7 +82,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
           style: Theme.of(context).textTheme.displaySmall,
         ),
         Expanded(
-          child: (_selectedCategory == -1 && _selectedQuestion == -1) ? _getBoard() : _getQuestionView()
+          child: (toShow == null) ? _getBoard() : _getQuestionView()
         ),
       ],
     );
@@ -100,92 +104,13 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   }
 
   Widget _getQuestionView() {
-    Question question = widget.section.categories[_selectedCategory].questions[_selectedQuestion];
-    if(_doubleShown) {
-      TextEditingController wagerController = TextEditingController()..text = wager;
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              question.question,
-              style: Theme.of(context).textTheme.labelLarge,
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              BaseEncoder.decode(question.answer),
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            Text(
-              'Max Wager: ${widget.section.value * 5} or Player Score',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.6,
-              child: TextField(
-                textAlign: TextAlign.center,
-                controller: wagerController,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-                onChanged: (value) {
-                  wager = value;
-                },
-              ),
-            ),
-            ElevatedButton(
-              onPressed: (_doubleClue) ? null : () {
-                widget.showQuestion(_selectedCategory, _selectedQuestion);
-                setState(() {
-                  _doubleClue = true;
-                });
-              }, 
-              child: const Text('Reveal Clue')
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: widget.players.asMap().entries.map((e) => Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(e.value.name, style: Theme.of(context).textTheme.labelMedium,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          onPressed: (!_doubleClue) ? null :  () {
-                            if(wagerController.text == '') wagerController.text = '0';
-                            widget.scoreUpdater(e.key, widget.players[e.key].score + int.parse(wagerController.text));
-                            _returnToBoard();
-                          },
-                          icon: const Icon(Icons.add_circle)
-                        ),
-                        IconButton(
-                          onPressed: (!_doubleClue) ? null : () {
-                            if(wagerController.text == '') wagerController.text = '0';
-                            widget.scoreUpdater(e.key, widget.players[e.key].score - int.parse(wagerController.text));
-                            _returnToBoard();
-                          },
-                          icon: const Icon(Icons.remove_circle)
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              )).toList(),
-            ),
-            ElevatedButton(
-              onPressed: (!_doubleClue) ? null : () {
-                _returnToBoard();
-              },
-              child: const Text('Return to Board')
-            )
-          ],
-        ),
-      );
+
+    if(toShow == null) {
+      return const Placeholder();
     }
+    Question question = toShow!;
+    TextEditingController wagerController = TextEditingController()..text = wager;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -193,57 +118,98 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
         children: [
           Text(
             question.question,
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.labelLarge,
             textAlign: TextAlign.center,
           ),
           Text(
             BaseEncoder.decode(question.answer),
-            style: Theme.of(context).textTheme.displaySmall,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
+          (_isDouble) ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Max Wager: ${widget.section.value * 5} or Player Score',
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: TextField(
+                  textAlign: TextAlign.center,
+                  controller: wagerController,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  onChanged: (value) {
+                    wager = value;
+                  },
+                ),
+              ),
+              ElevatedButton(
+                onPressed: (_doubleClue) ? null : () {
+                  widget.showQuestion(_selectedCategory, _selectedQuestion);
+                  setState(() {
+                    _doubleClue = true;
+                  });
+                }, 
+                child: const Text('Reveal Clue')
+              ),
+            ],
+          ) : const SizedBox(width: 0, height: 0,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: widget.players.asMap().entries.map((e) => Column(
-              children: [
-                Text(e.value.name, style: Theme.of(context).textTheme.labelMedium,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        widget.scoreUpdater(e.key, widget.players[e.key].score + (_selectedQuestion + 1) * widget.section.value);
-                        _returnToBoard();
-                      },
-                      icon: const Icon(Icons.add_circle)
-                    ),
-                    IconButton(
-                      onPressed: (_alreadyDeducted[e.key]) ? null : () {
-                        widget.scoreUpdater(e.key, widget.players[e.key].score - (_selectedQuestion + 1) * widget.section.value);
-                        setState(() {
-                          _alreadyDeducted[e.key] = true;
-                        });
-                      },
-                      icon: const Icon(Icons.remove_circle)
-                    ),
-                  ],
-                )
-              ],
+            children: widget.players.asMap().entries.map((e) => Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(e.value.name, style: Theme.of(context).textTheme.labelMedium,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: (_isDouble && !_doubleClue) ? null :  () {
+                          if(wagerController.text == '') wagerController.text = '0';
+                          int newScore = (_isDouble) ? int.parse(wagerController.text) : (_selectedQuestion + 1) * widget.section.value;
+                          widget.scoreUpdater(e.key, widget.players[e.key].score + newScore);
+                          _returnToBoard();
+                        },
+                        icon: const Icon(Icons.add_circle)
+                      ),
+                      IconButton(
+                        onPressed: ((_isDouble && !_doubleClue) || _alreadyDeducted[e.key]) ? null : () {
+                          if(wagerController.text == '') wagerController.text = '0';
+                          int newScore = (_isDouble) ? int.parse(wagerController.text) : (_selectedQuestion + 1) * widget.section.value;
+                          widget.scoreUpdater(e.key, widget.players[e.key].score - newScore);
+                          (_isDouble) ? _returnToBoard() : setState(() {
+                            _alreadyDeducted[e.key] = true;
+                          });
+                        },
+                        icon: const Icon(Icons.remove_circle)
+                      ),
+                    ],
+                  )
+                ],
+              ),
             )).toList(),
           ),
           ElevatedButton(
-            onPressed: _returnToBoard,
+            onPressed: (_isDouble && !_doubleClue) ? null : () {
+              _returnToBoard();
+            },
             child: const Text('Return to Board')
           )
         ],
       ),
     );
   }
-
+  
   void _returnToBoard() {
     widget.showBoard();
     setState(() {
+      toShow = null;
       wager = '0';
-      _doubleShown = false;
+      _isDouble = false;
       _doubleClue = false;
       _alreadyDeducted = widget.players.map((e) => false).toList();
       _previouslySelected[_selectedCategory][_selectedQuestion] = true;
@@ -253,21 +219,13 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   }
 
   void _setSelection(int category, int question) {
-    if(!_isDailyDouble(category, question)) {
-      widget.showQuestion(category, question);
-      setState(() {
+    (_isDailyDouble(category, question)) ? widget.showDailyDouble() : widget.showQuestion(category, question);
+    setState(() {
         _selectedCategory = category;
         _selectedQuestion = question;
-      });
-    }
-    else {
-      widget.showDailyDouble();
-      setState(() {
-        _selectedCategory = category;
-        _selectedQuestion = question;
-        _doubleShown = true;
-      });
-    }
+        toShow = widget.section.categories[_selectedCategory].questions[_selectedQuestion];
+        _isDouble = _isDailyDouble(category, question);
+    });
   }
 
   bool _isDailyDouble(int x, int y) {
