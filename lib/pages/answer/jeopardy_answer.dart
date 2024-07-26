@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:trivia/logic/base_encoder.dart';
-import 'package:trivia/model/category.dart';
 import 'package:trivia/model/player.dart';
 import 'package:trivia/model/question.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
@@ -48,12 +47,8 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
   @override
   void initState() {
     // BUILDING SELECTION BOARD
-    for(Category category in widget.section.categories) {
-      List<bool> sets = [];
-      for(int i = 0; i < category.questions.length; i++) {
-        sets.add(false);
-      }
-      _previouslySelected.add(sets);
+    for (var element in widget.section.categories) { 
+      _previouslySelected.add(element.questions.map((e) => false).toList());
     }
     _listener = _AnswerQuestionBoardListener(parent: this);
     _alreadyDeducted = widget.players.map((e) => false).toList();
