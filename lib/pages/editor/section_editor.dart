@@ -98,7 +98,6 @@ class _SectionEditorState extends State<SectionEditor> {
                 SectionType.multi => MultiAnswerSectionEditor(
                   section: section as MultiAnswerSection
                 ),
-                _ => const Placeholder()
               },
             ),
             Expanded(
@@ -125,7 +124,7 @@ class _SectionEditorState extends State<SectionEditor> {
         SectionType.jeopardy => JeopardySection(categories: [], title: section.title),
         SectionType.bowl => BowlSection(title: section.title, questions: [], value: 0),
         SectionType.finalQuestion => FinalSection(title: section.title, name: '', question: Question(question: 'New Question', answer: BaseEncoder.encode('New Answer'), imageLink: '')),
-        SectionType.multi => MultiAnswerSection(title: section.title, questions: [], questionValue: 100)
+        SectionType.multi => MultiAnswerSection(title: section.title, questions: [],)
       };
     });
   }
