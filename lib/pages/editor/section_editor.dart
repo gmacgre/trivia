@@ -4,10 +4,12 @@ import 'package:trivia/model/question.dart';
 import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
+import 'package:trivia/model/section/multianswer_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/pages/editor/bowl/bowl_section_editor.dart';
 import 'package:trivia/pages/editor/final/final_section_editor.dart';
 import 'package:trivia/pages/editor/jeopardy/jeopardy_section_editor.dart';
+import 'package:trivia/pages/editor/multi/multi_section_editor.dart';
 
 class SectionEditor extends StatefulWidget {
   const SectionEditor({
@@ -92,7 +94,11 @@ class _SectionEditorState extends State<SectionEditor> {
                 ),
                 SectionType.finalQuestion => FinalSectionEditor(
                   section: section as FinalSection
-                )
+                ),
+                SectionType.multi => MultiAnswerSectionEditor(
+                  section: section as MultiAnswerSection
+                ),
+                _ => const Placeholder()
               },
             ),
             Expanded(
@@ -118,7 +124,8 @@ class _SectionEditorState extends State<SectionEditor> {
       section = switch(e) {
         SectionType.jeopardy => JeopardySection(categories: [], title: section.title),
         SectionType.bowl => BowlSection(title: section.title, questions: [], value: 0),
-        SectionType.finalQuestion => FinalSection(title: section.title, name: '', question: Question(question: 'New Question', answer: BaseEncoder.encode('New Answer'), imageLink: ''))
+        SectionType.finalQuestion => FinalSection(title: section.title, name: '', question: Question(question: 'New Question', answer: BaseEncoder.encode('New Answer'), imageLink: '')),
+        SectionType.multi => MultiAnswerSection(title: section.title, questions: [], questionValue: 100)
       };
     });
   }
