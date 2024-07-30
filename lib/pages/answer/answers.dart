@@ -6,11 +6,13 @@ import 'package:trivia/model/player.dart';
 import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
+import 'package:trivia/model/section/multianswer_section.dart';
 import 'package:trivia/model/section/section.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/pages/answer/bowl_answer.dart';
 import 'package:trivia/pages/answer/final_question_answer.dart';
 import 'package:trivia/pages/answer/jeopardy_answer.dart';
+import 'package:trivia/pages/answer/multi_answer.dart';
 import 'package:trivia/pages/answer/section_selection.dart';
 
 class AnswersPage extends StatefulWidget {
@@ -253,6 +255,20 @@ class _AnswersPageState extends State<AnswersPage> {
           },
           updateScore: _updateScore,
           players: _players,
+        ),
+        MultiAnswerSection => MultiAnswer(
+          section: selected as MultiAnswerSection,
+          players: _players,
+          showQuestion: (idx) {
+            DesktopMultiWindow.invokeMethod(0, 'multiShowQuestion', idx);
+          },
+          showAnswer: (idx) {
+            DesktopMultiWindow.invokeMethod(0, 'multiShowAnswer', idx);
+          },
+          awardPoints: (player, points) {
+            _updateScore(player, _players[player].score + points);
+            DesktopMultiWindow.invokeMethod(0, 'multiScoreAwarded');
+          },
         ),
         _ => const Placeholder()
       };

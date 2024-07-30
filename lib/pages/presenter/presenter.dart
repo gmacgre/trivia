@@ -6,10 +6,12 @@ import 'package:trivia/model/player.dart';
 import 'package:trivia/model/section/bowl_section.dart';
 import 'package:trivia/model/section/final_section.dart';
 import 'package:trivia/model/section/jeopardy_section.dart';
+import 'package:trivia/model/section/multianswer_section.dart';
 import 'package:trivia/model/trivia.dart';
 import 'package:trivia/pages/presenter/bowl_presenter.dart';
 import 'package:trivia/pages/presenter/final_question_presenter.dart';
 import 'package:trivia/pages/presenter/jeopardy_presenter.dart';
+import 'package:trivia/pages/presenter/multi_presenter.dart';
 
 class PresenterPage extends StatefulWidget {
   const PresenterPage({
@@ -32,6 +34,7 @@ class _PresenterPageState extends State<PresenterPage> {
   late Widget toPresent = const Placeholder();
   final JeopardyPresenterController _jeopardyController = JeopardyPresenterController();
   final FinalQuestionPresenterController _finalController = FinalQuestionPresenterController();
+  final MultiAnswerPresenterController _multiController = MultiAnswerPresenterController();
   @override
   void initState() {
     super.initState();
@@ -171,6 +174,10 @@ class _PresenterPageState extends State<PresenterPage> {
               section: widget.trivia.sections[_selectedSection] as FinalSection, 
               controller: _finalController
             ),
+            MultiAnswerSection => MultiAnswerPresenter(
+              section: widget.trivia.sections[_selectedSection] as MultiAnswerSection,
+              controller: _multiController
+            ),
             // Should never reach here
             _ => const Placeholder(),
           };
@@ -207,7 +214,18 @@ class _PresenterPageState extends State<PresenterPage> {
         _finalController.showNext();
       }
 
-      // Bowl Section Calls
+      // Multi Answer Calls
+      case 'multiShowQuestion': {
+        await _shortAudio.setSource(AssetSource('reveal.mp3'));
+        _shortAudio.resume();
+        _multiController.showQuestion(arguments);
+      }
+      case 'multiShowAnswer': {
+        _multiController.showAnswer(arguments);
+      }
+      case 'multiScoreAwarded': {
+        _multiController.scoreAwarded();
+      }
     }
   }
 }
