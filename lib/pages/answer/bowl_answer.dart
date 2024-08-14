@@ -58,6 +58,14 @@ class _BowlAnswerState extends State<BowlAnswer> {
               child: Text(e.value.name)
             ),
           )).toList(),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              _setQuestion();
+            });
+          }, 
+          child: const Text('No Points')
         )
       ],
     );
