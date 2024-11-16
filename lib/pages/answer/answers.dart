@@ -56,51 +56,62 @@ class _AnswersPageState extends State<AnswersPage> {
         text: '${e.value.score}'
       );
       return Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Focus(
-                  onFocusChange: (hasFocus) {
-                    if(!hasFocus) {
-                      setState(() {
-                        _players[e.key].name = nameController.text;
-                      });
-                      DesktopMultiWindow.invokeMethod(0, 'setName', {
-                        'name': nameController.text,
-                        'index': e.key
-                      });
-                    }
-                  },
-                  child: TextField(controller: nameController, textAlign: TextAlign.center,),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Focus(
+                        onFocusChange: (hasFocus) {
+                          if(!hasFocus) {
+                            setState(() {
+                              _players[e.key].name = nameController.text;
+                            });
+                            DesktopMultiWindow.invokeMethod(0, 'setName', {
+                              'name': nameController.text,
+                              'index': e.key
+                            });
+                          }
+                        },
+                        child: TextField(controller: nameController, textAlign: TextAlign.center,),
+                      ),
+                    ),
+                    Expanded(
+                      child: Focus(
+                        onFocusChange: (hasFocus) {
+                          if (!hasFocus) {
+                            var parsed = int.tryParse(scoreController.text);
+                            _updateScore(e.key, (parsed != null) ? int.parse(scoreController.text) : 0);
+                          }
+                        },
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.allow(RegExp(r'[0123456789\-]'))
+                          ],
+                          controller: scoreController,
+                          textAlign: TextAlign.center,              
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Focus(
-                  onFocusChange: (hasFocus) {
-                    if (!hasFocus) {
-                      var parsed = int.tryParse(scoreController.text);
-                      _updateScore(e.key, (parsed != null) ? int.parse(scoreController.text) : 0);
-                    }
-                  },
-                  child: TextField(
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'[0123456789\-]'))
-                    ],
-                    controller: scoreController,
-                    textAlign: TextAlign.center,              
-                  ),
-                ),
-              ),
-            ),
-          ],
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _players.removeAt(e.key);
+                  });
+                  DesktopMultiWindow.invokeMethod(0, 'deletePlayer', e.key);
+                }, icon: const Icon(Icons.remove)
+              )
+            ],
+          ),
         ),
       );
     }));
