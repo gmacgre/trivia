@@ -154,10 +154,10 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
               ),
             ],
           ) : const SizedBox(width: 0, height: 0,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: widget.players.asMap().entries.map((e) => Expanded(
+          Wrap(
+            alignment: WrapAlignment.center,
+            children: widget.players.asMap().entries.map((e) => SizedBox(
+              width: 100,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -172,7 +172,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
                           widget.scoreUpdater(e.key, widget.players[e.key].score + newScore);
                           _returnToBoard();
                         },
-                        icon: const Icon(Icons.add_circle)
+                        icon: const Icon(Icons.add_circle, size: 30)
                       ),
                       IconButton(
                         onPressed: ((_isDouble && !_doubleClue) || _alreadyDeducted[e.key]) ? null : () {
@@ -183,7 +183,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
                             _alreadyDeducted[e.key] = true;
                           });
                         },
-                        icon: const Icon(Icons.remove_circle)
+                        icon: const Icon(Icons.remove_circle, size: 30)
                       ),
                     ],
                   )

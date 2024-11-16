@@ -129,6 +129,11 @@ class _PresenterPageState extends State<PresenterPage> {
           );
         });
       }
+      case 'deletePlayer': {
+        setState(() {
+          _players.removeAt(arguments as int);
+        });
+      }
       case 'setName': {
         setState(() {
           _players[arguments['index']].name = arguments['name'];
