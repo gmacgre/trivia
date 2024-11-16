@@ -46,6 +46,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
 
   @override
   void initState() {
+    super.initState();
     // BUILDING SELECTION BOARD
     for (var element in widget.section.categories) { 
       _previouslySelected.add(element.questions.map((e) => false).toList());
@@ -58,7 +59,6 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
       // Make new Daily Double Section
       _dailyDoubles.add([rng.nextInt(widget.section.categories.length), rng.nextInt(widget.section.categories[0].questions.length)]);
     }
-    super.initState();
   }
 
   @override
