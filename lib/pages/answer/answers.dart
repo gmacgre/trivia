@@ -46,7 +46,6 @@ class _AnswersPageState extends State<AnswersPage> {
   // Builds a Player Adder and Section Selector, and any subchild if needed.
   @override
   Widget build(BuildContext context) {
-
     // Player Adder
     List<Widget> base = [];
     base.addAll(_players.asMap().entries.map((e) {
@@ -61,47 +60,45 @@ class _AnswersPageState extends State<AnswersPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: nameController,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _players[e.key].name = nameController.text;
-                    });
-                    DesktopMultiWindow.invokeMethod(0, 'setName', {
-                      'name': nameController.text,
-                      'index': e.key
-                    });
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Focus(
+                  onFocusChange: (hasFocus) {
+                    if(!hasFocus) {
+                      setState(() {
+                        _players[e.key].name = nameController.text;
+                      });
+                      DesktopMultiWindow.invokeMethod(0, 'setName', {
+                        'name': nameController.text,
+                        'index': e.key
+                      });
+                    }
                   },
-                  style: buttonStyle,
-                  child: const Icon(Icons.check)
-                )
-              ],
+                  child: TextField(controller: nameController, textAlign: TextAlign.center,),
+                ),
+              ),
             ),
-            Row(
-              children: [
-                Expanded(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Focus(
+                  onFocusChange: (hasFocus) {
+                    if (!hasFocus) {
+                      var parsed = int.tryParse(scoreController.text);
+                      _updateScore(e.key, (parsed != null) ? int.parse(scoreController.text) : 0);
+                    }
+                  },
                   child: TextField(
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly,
+                      FilteringTextInputFormatter.allow(RegExp(r'[0123456789\-]'))
                     ],
                     controller: scoreController,
+                    textAlign: TextAlign.center,              
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _updateScore(e.key, int.parse(scoreController.text));
-                  },
-                  style: buttonStyle,
-                  child: const Icon(Icons.check)
-                )
-              ],
+              ),
             ),
           ],
         ),
