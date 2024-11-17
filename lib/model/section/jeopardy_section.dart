@@ -5,11 +5,13 @@ final class JeopardySection implements Section {
   JeopardySection({
     required this.categories,
     required this.title,
+    this.doubleCount = 1,
     this.value = 100
   });
 
   List<Category> categories;
   int value;
+  int doubleCount;
   
   @override
   String title;
@@ -23,7 +25,8 @@ final class JeopardySection implements Section {
       'title': title,
       'type': type.name,
       'categories': categories,
-      'value': value
+      'value': value,
+      'doubleCount': doubleCount
     };
   }
 
@@ -31,6 +34,7 @@ final class JeopardySection implements Section {
     return JeopardySection(
       title: json['title'],
       categories: List<Category>.from((json['categories'] as List<dynamic>).map((e) => Category.fromJson(e))),
+      doubleCount: json['doubleCount'],
       value: json['value']
     );
   }

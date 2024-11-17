@@ -55,7 +55,7 @@ class _JeopardyAnswerState extends State<JeopardyAnswer> {
     _alreadyDeducted = widget.players.map((e) => false).toList();
     _dailyDoubles = {};
     Random rng = Random();
-    while(_dailyDoubles.length < (widget.section.value) / 200) {
+    while(_dailyDoubles.length < widget.section.doubleCount) {
       // Make new Daily Double Section
       _dailyDoubles.add([rng.nextInt(widget.section.categories.length), rng.nextInt(widget.section.categories[0].questions.length)]);
     }

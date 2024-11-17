@@ -23,6 +23,7 @@ class _JeopardySectionEditorState extends State<JeopardySectionEditor> {
   @override
   Widget build(BuildContext context) {
     TextEditingController controller = TextEditingController();
+    TextEditingController doubleCountController = TextEditingController()..text=widget.section.doubleCount.toString();
     controller.text = '${widget.section.value}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -46,6 +47,25 @@ class _JeopardySectionEditorState extends State<JeopardySectionEditor> {
                   value = '0';
                 }
                 widget.section.value = int.parse(value);
+              },
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: TextField(
+              controller: doubleCountController,
+              textAlign: TextAlign.center,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly
+              ],
+              onChanged: (value) {
+                if(value == '') {
+                  value = '0';
+                }
+                widget.section.doubleCount = int.parse(value);
               },
             ),
           ),
