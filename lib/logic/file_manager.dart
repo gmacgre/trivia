@@ -39,8 +39,8 @@ class FileManager {
   }
 
   static bool validSave(String location) {
-    // TODO: Ensure valid file saving
-    return true;
+    RegExp exp = RegExp(r'[<>:"\/\\\|\?\*]');
+    return !exp.hasMatch(location);
   }
 
   static Future<List<String>> readDir(String location) async {

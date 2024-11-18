@@ -55,7 +55,7 @@ class _NewTriviaPageState extends State<NewTriviaPage> {
                       }
                       String tocheck = _convertTitletoSaveId(value);
                       String location = '$_dir$tocheck.json';
-                      if(!FileManager.validSave(location)) {
+                      if(!FileManager.validSave(tocheck)) {
                         return 'Illegal Characters Used';
                       }
                       if(FileManager.saveExists(location)) {
